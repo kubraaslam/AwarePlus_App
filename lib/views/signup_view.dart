@@ -81,7 +81,7 @@ class SignupViewState extends State<SignupView> {
                   decoration: InputDecoration(labelText: 'Username'),
                   validator:
                       (value) =>
-                          value!.isEmpty || value.length < 6
+                          value!.isEmpty 
                               ? 'Enter valid username'
                               : null,
                   onSaved: (value) => _username = value!,
