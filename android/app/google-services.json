@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "894392029195",
+    "project_id": "awareplus-6645f",
+    "storage_bucket": "awareplus-6645f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894392029195:android:6f34ec373a8a52721ff70e",
+        "android_client_info": {
+          "package_name": "com.awareplus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN2YSLjCWOk1cs93NiuykgLAadaiA87ek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894392029195:android:d46e44c0928826e91ff70e",
+        "android_client_info": {
+          "package_name": "com.example.aware_plus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN2YSLjCWOk1cs93NiuykgLAadaiA87ek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
