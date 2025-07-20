@@ -1,38 +1,46 @@
+import 'package:aware_plus/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  int _currentIndex = 0;
+
+  void _onTabTapped(int index) {
+    if (_currentIndex == index) return;
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        // Already on Home
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/knowledge');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/support');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        backgroundColor: const Color(0xFFF7C8CC),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
-            label: 'Knowledge',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.support_agent),
-            label: 'Support',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        onTap: (index) {
-          // handle navigation here
-        },
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -63,8 +71,8 @@ class HomeView extends StatelessWidget {
                   Navigator.pushNamed(context, '/knowledge');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF1768F),
-                  minimumSize: Size(double.infinity, 60),
+                  backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                  minimumSize: Size(double.infinity, 100),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -80,8 +88,8 @@ class HomeView extends StatelessWidget {
                   Navigator.pushNamed(context, '/support');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF1768F),
-                  minimumSize: Size(double.infinity, 60),
+                  backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                  minimumSize: Size(double.infinity, 100),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
