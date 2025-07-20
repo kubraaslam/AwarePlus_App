@@ -91,7 +91,7 @@ class _LoginViewState extends State<LoginView> {
                     onPressed: _isLoading ? null : _submitLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 231, 99, 110),
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
