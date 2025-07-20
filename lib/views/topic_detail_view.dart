@@ -1,4 +1,5 @@
 import 'package:aware_plus/views/articles_view.dart';
+import 'package:aware_plus/views/infographics_view.dart';
 import 'package:flutter/material.dart';
 
 class TopicDetailView extends StatelessWidget {
@@ -72,7 +73,7 @@ class TopicDetailView extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => PlaceholderPage(title: 'Infographics'),
+                    builder: (context) => InfographicsPage(topic: topicTitle),
                   ),
                 );
               },
