@@ -1,5 +1,6 @@
 import 'package:aware_plus/views/articles_view.dart';
 import 'package:aware_plus/views/infographics_view.dart';
+import 'package:aware_plus/views/quiz_view.dart';
 import 'package:flutter/material.dart';
 
 class TopicDetailView extends StatelessWidget {
@@ -21,11 +22,10 @@ class TopicDetailView extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                // Navigate to Quiz page or show quiz
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => PlaceholderPage(title: 'Quiz'),
+                    builder: (context) => QuizPage(topicId: topicTitle),
                   ),
                 );
               },

@@ -58,7 +58,7 @@ class KnowledgeView extends StatelessWidget {
             // Topic Cards
             _buildTopicTile(
               context,
-              'Sexual and Reproductive Health Education',
+              'Sexual and Reproductive Health Education'
             ),
             _buildTopicTile(context, 'Physical Sexual Health'),
             _buildTopicTile(context, 'Rights, Laws & Ethics'),
