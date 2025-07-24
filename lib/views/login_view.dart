@@ -15,6 +15,51 @@ class _LoginViewState extends State<LoginView> {
   String _password = '';
   bool _isLoading = false;
 
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('Reset Password'),
+          content: TextField(
+            controller: emailController,
+            decoration: InputDecoration(labelText: 'Enter your email'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+
+                try {
+                  await _authController.resetPassword(
+                    emailController.text.trim(),
+                  );
+
+                  if (!mounted) return; // ✅ Safeguard
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Password reset link sent!')),
+                  );
+                } catch (e) {
+                  if (!mounted) return; // ✅ Safeguard
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: ${e.toString()}')),
+                  );
+                }
+              },
+              child: Text('Send'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _submitLogin() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -27,10 +72,15 @@ class _LoginViewState extends State<LoginView> {
       setState(() => _isLoading = false);
 
       if (success) {
-        Navigator.pushReplacementNamed(context, '/home'); // Change to your home route
+        Navigator.pushReplacementNamed(
+          context,
+          '/home',
+        ); // Change to your home route
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed. Please check your credentials.')),
+          SnackBar(
+            content: Text('Login failed. Please check your credentials.'),
+          ),
         );
       }
     }
@@ -63,7 +113,9 @@ class _LoginViewState extends State<LoginView> {
                     if (value == null || value.isEmpty) {
                       return 'Email is required';
                     }
-                    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    final emailRegex = RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    );
                     return emailRegex.hasMatch(value)
                         ? null
                         : 'Enter a valid email';
@@ -77,9 +129,22 @@ class _LoginViewState extends State<LoginView> {
                 child: TextFormField(
                   decoration: InputDecoration(labelText: 'Password'),
                   obscureText: true,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Password is required' : null,
+                  validator:
+                      (value) => value!.isEmpty ? 'Password is required' : null,
                   onSaved: (value) => _password = value!,
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _showForgotPasswordDialog,
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 30),
@@ -96,14 +161,16 @@ class _LoginViewState extends State<LoginView> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: _isLoading
-                        ? CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : Text(
-                            'Login',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
+                    child:
+                        _isLoading
+                            ? CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
                   ),
                 ),
               ),
@@ -111,10 +178,14 @@ class _LoginViewState extends State<LoginView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Don’t have an account?', style: TextStyle(fontSize: 16)),
+                  Text(
+                    'Don’t have an account?',
+                    style: TextStyle(fontSize: 16),
+                  ),
                   TextButton(
-                    onPressed: () =>
-                        Navigator.pushReplacementNamed(context, '/signup'),
+                    onPressed:
+                        () =>
+                            Navigator.pushReplacementNamed(context, '/signup'),
                     child: Text(
                       'Sign Up',
                       style: TextStyle(

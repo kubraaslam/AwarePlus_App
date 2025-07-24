@@ -9,10 +9,11 @@ class AuthController {
   Future<bool> signup(User user) async {
     try {
       // Create user in Firebase Auth
-      fb_auth.UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: user.email,
-        password: user.password!,
-      );
+      fb_auth.UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
+            email: user.email,
+            password: user.password!,
+          );
 
       // Save additional data in Firestore
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
@@ -31,16 +32,24 @@ class AuthController {
   }
 
   Future<bool> login(String email, String password) async {
-  try {
-    await fb_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return true;
-  } catch (e) {
-    // ignore: avoid_print
-    print('Login error: $e');
-    return false;
+    try {
+      await fb_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return true;
+    } catch (e) {
+      // ignore: avoid_print
+      print('Login error: $e');
+      return false;
+    }
   }
-}
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }
