@@ -80,10 +80,7 @@ class SignupViewState extends State<SignupView> {
                 child: TextFormField(
                   decoration: InputDecoration(labelText: 'Username'),
                   validator:
-                      (value) =>
-                          value!.isEmpty 
-                              ? 'Enter valid username'
-                              : null,
+                      (value) => value!.isEmpty ? 'Enter valid username' : null,
                   onSaved: (value) => _username = value!,
                 ),
               ),
@@ -118,6 +115,21 @@ class SignupViewState extends State<SignupView> {
                     if (_dob == null) {
                       return 'Please select your date of birth';
                     }
+
+                    final today = DateTime.now();
+                    final age =
+                        today.year -
+                        _dob!.year -
+                        ((today.month < _dob!.month ||
+                                (today.month == _dob!.month &&
+                                    today.day < _dob!.day))
+                            ? 1
+                            : 0);
+
+                    if (age < 14) {
+                      return 'You must be at least 14 years old to sign up';
+                    }
+
                     return null;
                   },
                   onTap: () async {
@@ -194,10 +206,10 @@ class SignupViewState extends State<SignupView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Already have an account?', style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),),
+                  Text(
+                    'Already have an account?',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
                   TextButton(
                     onPressed:
                         () => Navigator.pushReplacementNamed(context, '/login'),
