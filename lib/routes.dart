@@ -1,3 +1,4 @@
+import 'package:aware_plus/views/emergency_view.dart';
 import 'package:aware_plus/views/glossary_view.dart';
 import 'package:aware_plus/views/home_view.dart';
 import 'package:aware_plus/views/knowledge_view.dart';
@@ -15,4 +16,5 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/knowledge': (_) => KnowledgeView(),
   '/support' : (_) => SupportView(),
   '/glossary' : (_) => GlossaryView(),
+  '/emergency' : (_) => EmergencyView(),
 };
