@@ -76,6 +76,14 @@ class _ProfileViewState extends State<ProfileView> {
               TextButton(
                 onPressed: () async {
                   String newName = controller.text.trim();
+                  if (newName.isEmpty || newName.length < 3) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Username must be at least 3 characters"),
+                      ),
+                    );
+                    return;
+                  }
                   await _firestore.collection('users').doc(_user!.uid).update({
                     'username': newName,
                   });
@@ -113,7 +121,17 @@ class _ProfileViewState extends State<ProfileView> {
               TextButton(
                 onPressed: () async {
                   try {
+                    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
                     String newEmail = controller.text.trim();
+
+                    if (!emailRegex.hasMatch(newEmail)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter a valid email address"),
+                        ),
+                      );
+                      return;
+                    }
                     await _user!.verifyBeforeUpdateEmail(newEmail);
                     setState(() => _email = newEmail);
                     if (!mounted) return;
@@ -156,8 +174,16 @@ class _ProfileViewState extends State<ProfileView> {
               ),
               TextButton(
                 onPressed: () async {
+                  String newPass = controller.text.trim();
+                  if (newPass.length < 6) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Password must be at least 6 characters"),
+                      ),
+                    );
+                    return;
+                  }
                   try {
-                    String newPass = controller.text.trim();
                     await _user!.updatePassword(newPass);
                     if (!mounted) return;
                     Navigator.pop(context);
@@ -274,10 +300,32 @@ class _ProfileViewState extends State<ProfileView> {
 
             ElevatedButton.icon(
               onPressed: () async {
-                await _auth.signOut();
-                if (!mounted) return;
-                Navigator.pushReplacementNamed(context, '/login');
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text("Confirm Logout"),
+                        content: const Text("Are you sure you want to logout?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text("Cancel"),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text("Logout"),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (confirm == true) {
+                  await _auth.signOut();
+                  if (!mounted) return;
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               },
+
               icon: const Icon(Icons.logout, color: Colors.white),
               label: const Text(
                 "Logout",
