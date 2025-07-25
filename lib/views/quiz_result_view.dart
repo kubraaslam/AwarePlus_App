@@ -2,47 +2,56 @@ import 'package:flutter/material.dart';
 
 class QuizResultPage extends StatelessWidget {
   final int score;
-  final int total;
+  final int totalQuestions;
 
-  const QuizResultPage({super.key, required this.score, required this.total});
+  const QuizResultPage({
+    super.key,
+    required this.score,
+    required this.totalQuestions,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Your Score"),
-        backgroundColor: Colors.pink[100],
+        title: const Text("Quiz Result"),
+        backgroundColor: const Color.fromARGB(255, 209, 65, 113),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "🎉 Quiz Completed!",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "You scored",
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              "$score / $total",
-              style: TextStyle(fontSize: 32, color: Colors.pinkAccent, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                  Navigator.pushNamed(context, '/knowledge');
-                },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pinkAccent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.emoji_events, size: 100, color: Colors.pink),
+              const SizedBox(height: 20),
+              Text(
+                'You scored',
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-              child: const Text("Back to Topics"),
-            )
-          ],
+              Text(
+                '$score / $totalQuestions',
+                style: Theme.of(context)
+                    .textTheme
+                    .displayMedium
+                    ?.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/knowledge'); // Go back to topics
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 209, 65, 113),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                ),
+                child: const Text('Back', style: TextStyle(fontSize: 18)),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -8,11 +8,12 @@ class LevelsPage extends StatelessWidget {
   const LevelsPage({super.key, required this.topicId});
 
   Future<List<String>> fetchSubtopics(String topicId) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('quizzes')
-        .doc(topicId)
-        .collection('subtopics')
-        .get();
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('quizzes')
+            .doc(topicId)
+            .collection('subtopics')
+            .get();
 
     return snapshot.docs.map((doc) => doc.id).toList();
   }
@@ -21,7 +22,7 @@ class LevelsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$topicId - Quiz Levels'),
+        title: Text('$topicId - Quiz Levels', style: TextStyle(fontSize: 18)),
         backgroundColor: const Color.fromARGB(255, 229, 117, 126),
       ),
       body: FutureBuilder<List<String>>(
@@ -46,7 +47,10 @@ class LevelsPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final subtopic = subtopics[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 231, 99, 110),
@@ -56,10 +60,11 @@ class LevelsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => QuizPage(
-                          topicId: topicId,
-                          subtopicId: subtopic,
-                        ),
+                        builder:
+                            (context) => QuizPage(
+                              topicId: topicId,
+                              subtopicId: subtopic,
+                            ),
                       ),
                     );
                   },

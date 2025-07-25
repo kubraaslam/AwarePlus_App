@@ -1,15 +1,39 @@
 import 'package:aware_plus/views/topic_detail_view.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
-class KnowledgeView extends StatelessWidget {
+class KnowledgeView extends StatefulWidget {
   const KnowledgeView({super.key});
 
   @override
+  State<KnowledgeView> createState() => _KnowledgeViewState();
+}
+
+class _KnowledgeViewState extends State<KnowledgeView> {
+  final TextEditingController _searchController = TextEditingController();
+  final List<String> _allTopics = [
+    'Sexual and Reproductive Health Education',
+    'Physical Sexual Health',
+    'Rights, Laws & Ethics',
+    'Myths & Misconceptions',
+  ];
+
+  String _searchQuery = '';
+
+  @override
   Widget build(BuildContext context) {
+    List<String> filteredTopics =
+        _allTopics
+            .where(
+              (topic) =>
+                  topic.toLowerCase().contains(_searchQuery.toLowerCase()),
+            )
+            .toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: const Color.fromARGB(255, 229, 117, 126),
@@ -19,11 +43,11 @@ class KnowledgeView extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () => Navigator.pop(context),
                 ),
-                SizedBox(width: 8),
-                Text(
+                const SizedBox(width: 8),
+                const Text(
                   'Knowledge Center',
                   style: TextStyle(
                     fontSize: 20,
@@ -38,13 +62,14 @@ class KnowledgeView extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: ListView(
+        child: Column(
           children: [
             // Search Box
             TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search topics',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 fillColor: Colors.grey[200],
                 filled: true,
                 border: OutlineInputBorder(
@@ -52,17 +77,23 @@ class KnowledgeView extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
               ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Topic Cards
-            _buildTopicTile(
-              context,
-              'Sexual and Reproductive Health Education'
+            Expanded(
+              child: ListView(
+                children:
+                    filteredTopics
+                        .map((topic) => _buildTopicTile(context, topic))
+                        .toList(),
+              ),
             ),
-            _buildTopicTile(context, 'Physical Sexual Health'),
-            _buildTopicTile(context, 'Rights, Laws & Ethics'),
-            _buildTopicTile(context, 'Myths & Misconceptions'),
           ],
         ),
       ),
@@ -71,12 +102,24 @@ class KnowledgeView extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 8),
           child: SizedBox(
-            height: 50, // Fixed height prevents overflow
+            height: 50,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildNavItem(Icons.bookmark_border, 'Bookmark'),
-                _buildNavItem(Icons.share, 'Share'),
+                _buildNavItem(
+                  Icons.share,
+                  'Share',
+                  onTap: () {
+                    SharePlus.instance.share(
+                      ShareParams(
+                        text:
+                            'Check out this great content on sexual health education from the Aware+ app!',
+                        subject: 'Explore Knowledge with Aware+',
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -85,15 +128,18 @@ class KnowledgeView extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 20),
-        SizedBox(height: 2),
-        Text(label, style: TextStyle(fontSize: 12)),
-      ],
+  Widget _buildNavItem(IconData icon, String label, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 20),
+          const SizedBox(height: 2),
+          Text(label, style: const TextStyle(fontSize: 12)),
+        ],
+      ),
     );
   }
 
@@ -102,14 +148,14 @@ class KnowledgeView extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: Colors.black26, width: 1),
+        side: const BorderSide(color: Colors.black26, width: 1),
       ),
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: ListTile(
           title: Text(title),
-          trailing: Icon(Icons.arrow_forward_ios),
+          trailing: const Icon(Icons.arrow_forward_ios),
           onTap: () {
             Navigator.push(
               context,
