@@ -1,3 +1,4 @@
+import 'package:aware_plus/views/bookmark_view.dart';
 import 'package:aware_plus/views/topic_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -106,7 +107,16 @@ class _KnowledgeViewState extends State<KnowledgeView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(Icons.bookmark_border, 'Bookmark'),
+                _buildNavItem(
+                  Icons.bookmark_border,
+                  'Bookmarks',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BookmarksPage()),
+                    );
+                  },
+                ),
                 _buildNavItem(
                   Icons.share,
                   'Share',
@@ -114,7 +124,7 @@ class _KnowledgeViewState extends State<KnowledgeView> {
                     SharePlus.instance.share(
                       ShareParams(
                         text:
-                            'Check out this great content on sexual health education from the Aware+ app!',
+                            'Check out this great content on sexual health education from the Aware+ app!\n\nExplore now: https://awareplus.app',
                         subject: 'Explore Knowledge with Aware+',
                       ),
                     );
