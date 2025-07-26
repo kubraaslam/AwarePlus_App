@@ -10,9 +10,11 @@ class TopicDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const buttonColor = Color.fromARGB(255, 231, 99, 110);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(topicTitle, style: TextStyle(fontSize: 18)),
+        title: Text(topicTitle, style: const TextStyle(fontSize: 18)),
         backgroundColor: const Color.fromARGB(255, 229, 117, 126),
       ),
       body: Padding(
@@ -30,22 +32,29 @@ class TopicDetailView extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 100),
-                backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                minimumSize: const Size(double.infinity, 100),
+                backgroundColor: buttonColor,
               ),
-              child: Text(
-                'Quiz',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.quiz, color: Colors.white, size: 28),
+                  SizedBox(width: 12),
+                  Text(
+                    'Quiz',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to Articles page or show articles
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -54,22 +63,29 @@ class TopicDetailView extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 100),
-                backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                minimumSize: const Size(double.infinity, 100),
+                backgroundColor: buttonColor,
               ),
-              child: Text(
-                'Articles',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.article, color: Colors.white, size: 28),
+                  SizedBox(width: 12),
+                  Text(
+                    'Articles',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to Infographics page or show infographics
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -78,16 +94,28 @@ class TopicDetailView extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 100),
-                backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                minimumSize: const Size(double.infinity, 100),
+                backgroundColor: buttonColor,
               ),
-              child: Text(
-                'Infographics',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(
+                    Icons.insert_chart_outlined,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    'Infographics',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -109,7 +137,10 @@ class PlaceholderPage extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 229, 117, 126),
       ),
       body: Center(
-        child: Text('This is the $title page.', style: TextStyle(fontSize: 24)),
+        child: Text(
+          'This is the $title page.',
+          style: const TextStyle(fontSize: 24),
+        ),
       ),
     );
   }

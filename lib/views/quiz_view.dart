@@ -29,14 +29,13 @@ class _QuizPageState extends State<QuizPage> {
     String topicId,
     String subtopicId,
   ) async {
-    final querySnapshot =
-        await FirebaseFirestore.instance
-            .collection('quizzes')
-            .doc(topicId)
-            .collection('subtopics')
-            .doc(subtopicId)
-            .collection('questions')
-            .get();
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('quizzes')
+        .doc(topicId)
+        .collection('subtopics')
+        .doc(subtopicId)
+        .collection('questions')
+        .get();
 
     return querySnapshot.docs.map((doc) {
       final data = doc.data();
@@ -129,6 +128,8 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
 
+  bool quizFinished = false;
+
   @override
   void initState() {
     super.initState();
@@ -177,22 +178,27 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
         });
         _controller.forward();
       } else {
-        // ignore: use_build_context_synchronously
-        Navigator.of(context)
-            .pushReplacement(
-              MaterialPageRoute(
-                builder:
-                    (context) => QuizResultPage(
-                      score: score,
-                      totalQuestions: widget.questions.length,
-                    ),
-              ),
-            )
-            .then((_) {
-              widget.onQuizCompleted();
-            });
+        // Quiz finished, show View Result button instead of auto navigation
+        setState(() {
+          quizFinished = true;
+        });
       }
     });
+  }
+
+  void _goToResults() {
+    Navigator.of(context)
+        .pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => QuizResultPage(
+              score: score,
+              totalQuestions: widget.questions.length,
+            ),
+          ),
+        )
+        .then((_) {
+          widget.onQuizCompleted();
+        });
   }
 
   Widget buildAnsweredQuestion(Map<String, dynamic> data) {
@@ -261,6 +267,44 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (quizFinished) {
+      // Show all answered questions + View Result button
+      return Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...answeredWidgets.map(buildAnsweredQuestion),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _goToResults,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 209, 65, 113),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'View Result',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final question = widget.questions[currentQuestionIndex];
 
     return Padding(
@@ -308,22 +352,15 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
                     if (answered) {
                       final optClean = option.toString().trim().toLowerCase();
                       final correctClean =
-                          question['correctAnswer']
-                              .toString()
-                              .trim()
-                              .toLowerCase();
+                          question['correctAnswer'].toString().trim().toLowerCase();
                       final selectedClean =
-                          (selectedOption ?? "")
-                              .toString()
-                              .trim()
-                              .toLowerCase();
+                          (selectedOption ?? "").toString().trim().toLowerCase();
 
                       if (optClean == correctClean) {
                         buttonColor = Colors.green;
                       } else if (optClean == selectedClean) {
                         buttonColor = Colors.red;
                       } else {
-                        // No grey fallback, just keep default pink
                         buttonColor = Colors.pink.shade300;
                       }
                     } else {
