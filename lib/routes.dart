@@ -1,3 +1,5 @@
+import 'package:aware_plus/views/book_appointment_view.dart';
+import 'package:aware_plus/views/counselor_dashboard.dart';
 import 'package:aware_plus/views/emergency_view.dart';
 import 'package:aware_plus/views/glossary_view.dart';
 import 'package:aware_plus/views/home_view.dart';
@@ -19,4 +21,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/glossary' : (_) => GlossaryView(),
   '/emergency' : (_) => EmergencyView(),
   '/profile': (_) => ProfileView(),
+  '/counselorDashboard': (_) => CounselorDashboard(),
+  '/bookAppointment' : (_) => BookAppointmentPage(),
 };
