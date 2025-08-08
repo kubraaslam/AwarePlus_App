@@ -30,7 +30,7 @@ class EmergencyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Emergency Contacts"),
+        title: const Text("Helplines"),
         backgroundColor: Colors.redAccent,
       ),
       body: ListView.builder(

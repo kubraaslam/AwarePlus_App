@@ -1,4 +1,4 @@
-import 'package:aware_plus/views/chat_view.dart';
+import 'package:aware_plus/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class SupportView extends StatelessWidget {
@@ -9,14 +9,9 @@ class SupportView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFFE7636E),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: const Text(
           'Support Services',
           style: TextStyle(
@@ -55,33 +50,9 @@ class SupportView extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => const ChatPage(
-                                counselorId: 'SSS',
-                              ), //should change w actual Id from firebase
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.chat_bubble_outline),
-                    label: const Text('Chat with SSS'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE7636E),
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
-                      // Book appointment
+                      Navigator.pushNamed(context, '/bookAppointment');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE7636E),
@@ -131,6 +102,25 @@ class SupportView extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 2, // Index of Support tab
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushReplacementNamed(context, '/knowledge');
+              break;
+            case 2:
+              // Stay on current
+              break;
+            case 3:
+              Navigator.pushReplacementNamed(context, '/profile');
+              break;
+          }
+        },
       ),
     );
   }

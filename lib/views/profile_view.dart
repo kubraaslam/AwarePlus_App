@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:aware_plus/widgets/bottom_nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -213,8 +214,17 @@ class _ProfileViewState extends State<ProfileView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile'),
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'My Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         backgroundColor: const Color.fromARGB(255, 229, 117, 126),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -338,6 +348,24 @@ class _ProfileViewState extends State<ProfileView> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 3, // Index of Profile tab
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushReplacementNamed(context, '/knowledge');
+              break;
+            case 2:
+              Navigator.pushReplacementNamed(context, '/support');
+              break;
+            case 3:
+              break;
+          }
+        },
       ),
     );
   }
