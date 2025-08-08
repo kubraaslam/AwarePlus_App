@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:aware_plus/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -41,12 +43,12 @@ class _LoginViewState extends State<LoginView> {
                     emailController.text.trim(),
                   );
 
-                  if (!mounted) return; // ✅ Safeguard
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Password reset link sent!')),
                   );
                 } catch (e) {
-                  if (!mounted) return; // ✅ Safeguard
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: ${e.toString()}')),
                   );
@@ -72,13 +74,30 @@ class _LoginViewState extends State<LoginView> {
       setState(() => _isLoading = false);
 
       if (success) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/home',
-        ); // Change to your home route
+        // Role-based redirection
+        final uid = _authController.getCurrentUserId();
+        final userDoc = await _authController.getUserData(uid);
+
+        if (userDoc != null) {
+          final role = userDoc['role'];
+
+          if (role == 'counselor') {
+            Navigator.pushReplacementNamed(context, '/counselorDashboard');
+          } else if (role == 'student') {
+            Navigator.pushReplacementNamed(context, '/home');
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Unknown user role.')));
+          }
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('User data not found.')));
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Login failed. Please check your credentials.'),
           ),
         );

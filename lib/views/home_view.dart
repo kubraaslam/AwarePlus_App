@@ -29,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
         Navigator.pushNamed(context, '/knowledge');
         break;
       case 2:
-        Navigator.pushNamed(context, '/support');
+        Navigator.pushReplacementNamed(context, '/support');
         break;
       case 3:
         Navigator.pushNamed(context, '/profile');
@@ -124,7 +124,7 @@ class _HomeViewState extends State<HomeView> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/support');
+                    Navigator.pushReplacementNamed(context, '/support');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 231, 99, 110),

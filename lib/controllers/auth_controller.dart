@@ -20,6 +20,7 @@ class AuthController {
         'username': user.username,
         'email': user.email,
         'dob': user.dob?.toIso8601String(),
+        'role': 'student',
         'createdAt': Timestamp.now(),
       });
 
@@ -43,6 +44,18 @@ class AuthController {
       print('Login error: $e');
       return false;
     }
+  }
+
+  String getCurrentUserId() {
+    return _auth.currentUser?.uid ?? '';
+  }
+
+  Future<Map<String, dynamic>?> getUserData(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (doc.exists) {
+      return doc.data();
+    }
+    return null;
   }
 
   Future<void> resetPassword(String email) async {
