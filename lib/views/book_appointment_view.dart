@@ -64,6 +64,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       'appointmentType': _appointmentType,
       'additionalInfo': _additionalInfoController.text.trim(),
       'createdAt': Timestamp.now(),
+      'status': 'pending',
     });
 
     setState(() => _isSubmitting = false);
