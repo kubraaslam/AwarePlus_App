@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+  final bool showBackButton;
+
+  const ProfileView({super.key, this.showBackButton = false});
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -214,7 +216,7 @@ class _ProfileViewState extends State<ProfileView> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: widget.showBackButton,
         title: const Text(
           'My Profile',
           style: TextStyle(
@@ -349,24 +351,27 @@ class _ProfileViewState extends State<ProfileView> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 3, // Index of Profile tab
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 1:
-              Navigator.pushReplacementNamed(context, '/knowledge');
-              break;
-            case 2:
-              Navigator.pushReplacementNamed(context, '/support');
-              break;
-            case 3:
-              break;
-          }
-        },
-      ),
+      bottomNavigationBar:
+          widget.showBackButton
+              ? null
+              : BottomNavBar(
+                currentIndex: 3,
+                onTap: (index) {
+                  switch (index) {
+                    case 0:
+                      Navigator.pushReplacementNamed(context, '/home');
+                      break;
+                    case 1:
+                      Navigator.pushReplacementNamed(context, '/knowledge');
+                      break;
+                    case 2:
+                      Navigator.pushReplacementNamed(context, '/support');
+                      break;
+                    case 3:
+                      break;
+                  }
+                },
+              ),
     );
   }
 }

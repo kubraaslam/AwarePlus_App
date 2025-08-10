@@ -1,3 +1,4 @@
+import 'package:aware_plus/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +29,59 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
     }
   }
 
+  Future<void> _completeSessionWithNotes(String docId, String notes) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(docId)
+          .update({'status': 'completed', 'notes': notes});
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Session completed and notes saved')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to save notes: $e')));
+    }
+  }
+
+  Future<void> _showNotesDialog(String docId, String initialNotes) async {
+    final TextEditingController notesController = TextEditingController(
+      text: initialNotes,
+    );
+
+    await showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Add Session Notes'),
+            content: TextField(
+              controller: notesController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Write your notes here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(), // Cancel
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _completeSessionWithNotes(docId, notesController.text.trim());
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Save & Complete'),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
@@ -35,167 +89,188 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F6F8),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          'aware+',
-          style: TextStyle(
-            color: Color(0xFFE7636E),
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFFE7636E),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'Profile',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfileView(showBackButton: true),
+                ),
+              );
+            },
           ),
-        ),
-        actions: const [
-          CircleAvatar(
-            backgroundColor: Color(0xFFE7636E),
-            child: Icon(Icons.person, color: Colors.white),
-          ),
-          SizedBox(width: 16),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: StreamBuilder<QuerySnapshot>(
-          stream:
-              FirebaseFirestore.instance
-                  .collection('appointments')
-                  .orderBy('createdAt', descending: true)
-                  .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (!snapshot.hasData) {
-              return const Center(child: Text('No appointment data.'));
-            }
+        child: Column(
+          children: [
+            Image.asset('assets/img/awareplus-logo.png', height: 100),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance
+                        .collection('appointments')
+                        .orderBy('createdAt', descending: true)
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: Text('No appointment data.'));
+                  }
 
-            final allAppointments =
-                snapshot.data!.docs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  data['id'] = doc.id; // add doc ID for updates
-                  return data;
-                }).toList();
+                  final allAppointments =
+                      snapshot.data!.docs.map((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        data['id'] = doc.id; // add doc ID for updates
+                        return data;
+                      }).toList();
 
-            final now = DateTime.now();
-            final todayAppointments =
-                allAppointments.where((appt) {
-                  final date = DateTime.tryParse(appt['preferredDate'] ?? '');
-                  return date != null &&
-                      date.year == now.year &&
-                      date.month == now.month &&
-                      date.day == now.day;
-                }).toList();
+                  final now = DateTime.now();
+                  final todayAppointments =
+                      allAppointments.where((appt) {
+                        final date = DateTime.tryParse(
+                          appt['preferredDate'] ?? '',
+                        );
+                        return date != null &&
+                            date.year == now.year &&
+                            date.month == now.month &&
+                            date.day == now.day;
+                      }).toList();
 
-            final pendingAppointments =
-                allAppointments
-                    .where(
-                      (appt) =>
-                          (appt['status'] ?? '').toLowerCase() == 'pending',
-                    )
-                    .toList();
+                  final pendingAppointments =
+                      allAppointments
+                          .where(
+                            (appt) =>
+                                (appt['status'] ?? '').toLowerCase() ==
+                                'pending',
+                          )
+                          .toList();
 
-            final weekAppointments =
-                allAppointments.where((appt) {
-                  final date = DateTime.tryParse(appt['preferredDate'] ?? '');
-                  return date != null &&
-                      date.isAfter(now.subtract(const Duration(days: 1))) &&
-                      date.isBefore(now.add(const Duration(days: 7)));
-                }).toList();
+                  final weekAppointments =
+                      allAppointments.where((appt) {
+                        final date = DateTime.tryParse(
+                          appt['preferredDate'] ?? '',
+                        );
+                        return date != null &&
+                            date.isAfter(
+                              now.subtract(const Duration(days: 1)),
+                            ) &&
+                            date.isBefore(now.add(const Duration(days: 7)));
+                      }).toList();
 
-            final completedAppointments =
-                allAppointments
-                    .where(
-                      (appt) =>
-                          (appt['status'] ?? '').toLowerCase() == 'completed',
-                    )
-                    .toList();
+                  final completedAppointments =
+                      allAppointments
+                          .where(
+                            (appt) =>
+                                (appt['status'] ?? '').toLowerCase() ==
+                                'completed',
+                          )
+                          .toList();
 
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Welcome back, SSS!',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'You have ${pendingAppointments.length} appointment requests and ${todayAppointments.length} sessions scheduled for today.',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Summary Cards
-                  SizedBox(
-                    height: 180,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _summaryCard(
-                          'Pending Requests',
-                          pendingAppointments.length.toString(),
-                          'Awaiting your response',
-                          Icons.access_time,
-                        ),
-                        _summaryCard(
-                          'Today\'s Sessions',
-                          todayAppointments.length.toString(),
-                          'Scheduled appointments',
-                          Icons.calendar_today,
-                        ),
-                        _summaryCard(
-                          'This Week',
-                          weekAppointments.length.toString(),
-                          'Total appointments',
-                          Icons.date_range,
-                        ),
-                        _summaryCard(
-                          'Completed',
-                          completedAppointments.length.toString(),
-                          'This month',
-                          Icons.check_circle,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  isMobile
-                      ? Column(
-                        children: [
-                          _appointmentRequestsCard(pendingAppointments),
-                          const SizedBox(height: 20),
-                          _todayScheduleCard(todayAppointments),
-                          const SizedBox(height: 20),
-                          _upcomingDaysCard(allAppointments),
-                        ],
-                      )
-                      : Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: _appointmentRequestsCard(
-                              pendingAppointments,
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'Welcome back, SSS!',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'You have ${pendingAppointments.length} appointment requests and ${todayAppointments.length} sessions scheduled for today.',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Summary Cards
+                        SizedBox(
+                          height: 180,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              _summaryCard(
+                                'Pending Requests',
+                                pendingAppointments.length.toString(),
+                                'Awaiting your response',
+                                Icons.access_time,
+                              ),
+                              _summaryCard(
+                                'Today\'s Sessions',
+                                todayAppointments.length.toString(),
+                                'Scheduled appointments',
+                                Icons.calendar_today,
+                              ),
+                              _summaryCard(
+                                'This Week',
+                                weekAppointments.length.toString(),
+                                'Total appointments',
+                                Icons.date_range,
+                              ),
+                              _summaryCard(
+                                'Completed',
+                                completedAppointments.length.toString(),
+                                'This month',
+                                Icons.check_circle,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        isMobile
+                            ? Column(
                               children: [
+                                _appointmentRequestsCard(pendingAppointments),
+                                const SizedBox(height: 20),
                                 _todayScheduleCard(todayAppointments),
                                 const SizedBox(height: 20),
                                 _upcomingDaysCard(allAppointments),
                               ],
+                            )
+                            : Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: _appointmentRequestsCard(
+                                    pendingAppointments,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      _todayScheduleCard(todayAppointments),
+                                      const SizedBox(height: 20),
+                                      _upcomingDaysCard(allAppointments),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                ],
+                      ],
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -262,6 +337,9 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                   date != null
                       ? DateFormat('MMMM d, yyyy').format(date)
                       : 'No date';
+
+              final notes = appt['notes'] ?? '';
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Container(
@@ -281,7 +359,14 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                       Text('$formattedDate • ${appt['preferredTime'] ?? ''}'),
                       const SizedBox(height: 4),
                       Text('Topic: ${appt['appointmentType'] ?? 'N/A'}'),
-                      const SizedBox(height: 8),
+                      if (notes.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6.0, bottom: 6.0),
+                          child: Text(
+                            'Notes: $notes',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                        ),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -301,6 +386,14 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                               backgroundColor: Colors.grey,
                             ),
                             child: const Text('Reject'),
+                          ),
+                          ElevatedButton(
+                            onPressed:
+                                () => _showNotesDialog(appt['id'], notes),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            child: const Text('Complete & Add Notes'),
                           ),
                           TextButton(
                             onPressed: () {},
@@ -334,34 +427,65 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             if (todayAppointments.isEmpty)
               const Text('No appointments for today.'),
             ...todayAppointments.map((item) {
+              final notes = item['notes'] ?? '';
+
               return ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   '${item['preferredTime'] ?? ''} - ${item['fullName'] ?? ''}',
                 ),
-                subtitle: Text('${item['appointmentType'] ?? ''}'),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color:
-                        (item['status'] ?? '').toLowerCase() == 'approved'
-                            ? Colors.green[100]
-                            : Colors.orange[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    item['status'] ?? 'pending',
-                    style: TextStyle(
-                      color:
-                          (item['status'] ?? '').toLowerCase() == 'approved'
-                              ? Colors.green
-                              : Colors.orange,
-                      fontWeight: FontWeight.bold,
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${item['appointmentType'] ?? ''}'),
+                    if (notes.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          'Notes: $notes',
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                trailing: Wrap(
+                  spacing: 8,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            (item['status'] ?? '').toLowerCase() == 'approved'
+                                ? Colors.green[100]
+                                : Colors.orange[100],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        item['status'] ?? 'pending',
+                        style: TextStyle(
+                          color:
+                              (item['status'] ?? '').toLowerCase() == 'approved'
+                                  ? Colors.green
+                                  : Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
+                    if ((item['status'] ?? '').toLowerCase() != 'completed')
+                      ElevatedButton(
+                        onPressed: () => _showNotesDialog(item['id'], notes),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text('Complete & Add Notes'),
+                      ),
+                  ],
                 ),
               );
             }),
