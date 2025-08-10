@@ -20,6 +20,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
   DateTime? _selectedDate;
   String? _selectedTime;
   String? _appointmentType;
+  String? _appointmentId; // NEW: For update mode
 
   final List<String> _times = [
     '09:00 AM',
@@ -39,6 +40,31 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
     'Other',
   ];
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    if (args != null) {
+      _appointmentId = args['appointmentId'];
+
+      _selectedDate =
+          args['preferredDate'] != null
+              ? DateTime.tryParse(args['preferredDate'])
+              : null;
+      _selectedTime = args['preferredTime'] ?? '';
+      _appointmentType = args['appointmentType'] ?? '';
+
+      // Prefill other fields if provided
+      _fullNameController.text = args['fullName'] ?? '';
+      _studentIdController.text = args['studentId'] ?? '';
+      _emailController.text = args['email'] ?? '';
+      _phoneController.text = args['phone'] ?? '';
+      _additionalInfoController.text = args['additionalInfo'] ?? '';
+    }
+  }
+
   bool _isSubmitting = false;
 
   Future<void> _submitForm() async {
@@ -54,7 +80,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
 
     setState(() => _isSubmitting = true);
 
-    await FirebaseFirestore.instance.collection('appointments').add({
+    final data = {
       'fullName': _fullNameController.text.trim(),
       'studentId': _studentIdController.text.trim(),
       'email': _emailController.text.trim(),
@@ -63,22 +89,37 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       'preferredTime': _selectedTime,
       'appointmentType': _appointmentType,
       'additionalInfo': _additionalInfoController.text.trim(),
-      'createdAt': Timestamp.now(),
-      'status': 'pending',
-    });
+      'status': 'pending', // reset status on update
+      'updatedAt': Timestamp.now(),
+    };
+
+    if (_appointmentId != null) {
+      // Update existing appointment
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(_appointmentId)
+          .update(data);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Appointment updated successfully!')),
+      );
+    } else {
+      // Create new appointment
+      await FirebaseFirestore.instance.collection('appointments').add({
+        ...data,
+        'createdAt': Timestamp.now(),
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Appointment booked successfully!')),
+      );
+    }
 
     setState(() => _isSubmitting = false);
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Appointment booked successfully!')),
-    );
-
-    // Wait 2 seconds before navigating
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
-
-    // Navigate to SupportView page
     Navigator.pushReplacementNamed(context, '/support');
 
     _formKey.currentState!.reset();
@@ -86,6 +127,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       _selectedDate = null;
       _selectedTime = null;
       _appointmentType = null;
+      _appointmentId = null;
     });
   }
 
@@ -135,7 +177,9 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       children: [
         Expanded(
           child: Text(
-            'Book Your Confidential Appointment',
+            _appointmentId != null
+                ? 'Reschedule Your Appointment'
+                : 'Book Your Confidential Appointment',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
@@ -149,7 +193,11 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book Appointment'),
+        title: Text(
+          _appointmentId != null
+              ? 'Reschedule Appointment'
+              : 'Book Appointment',
+        ),
         backgroundColor: Colors.pinkAccent,
         actions: [
           IconButton(
@@ -182,7 +230,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         style: TextStyle(color: Colors.black54),
                       ),
                       const SizedBox(height: 24),
-                      // Full Name & Student ID
                       Row(
                         children: [
                           Expanded(
@@ -209,7 +256,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Email
                       TextFormField(
                         controller: _emailController,
                         decoration: const InputDecoration(
@@ -220,7 +266,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         validator: (v) => v!.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
-                      // Phone
                       TextFormField(
                         controller: _phoneController,
                         decoration: const InputDecoration(
@@ -231,7 +276,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         validator: (v) => v!.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
-                      // Date & Time
                       Row(
                         children: [
                           Expanded(
@@ -239,7 +283,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                               onTap: () async {
                                 final date = await showDatePicker(
                                   context: context,
-                                  initialDate: DateTime.now(),
+                                  initialDate: _selectedDate ?? DateTime.now(),
                                   firstDate: DateTime.now(),
                                   lastDate: DateTime.now().add(
                                     const Duration(days: 365),
@@ -287,7 +331,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Appointment Type
                       DropdownButtonFormField<String>(
                         value: _appointmentType,
                         decoration: const InputDecoration(
@@ -307,7 +350,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         validator: (v) => v == null ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
-                      // Additional Info
                       TextFormField(
                         controller: _additionalInfoController,
                         decoration: const InputDecoration(
@@ -332,7 +374,11 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                       Colors.white,
                                     ),
                                   )
-                                  : const Text('Book Appointment'),
+                                  : Text(
+                                    _appointmentId != null
+                                        ? 'Update Appointment'
+                                        : 'Book Appointment',
+                                  ),
                         ),
                       ),
                     ],

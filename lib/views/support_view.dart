@@ -64,6 +64,22 @@ class SupportView extends StatelessWidget {
                     ),
                     child: const Text('Book an Appointment'),
                   ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/myAppointments');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE7636E), // Or any color you prefer
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('My Appointments'),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
