@@ -1,3 +1,4 @@
+import 'package:aware_plus/views/notes_view.dart';
 import 'package:aware_plus/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -92,17 +93,39 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
         automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFFE7636E),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            tooltip: 'Profile',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileView(showBackButton: true),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.note_alt, color: Colors.black),
+                  tooltip: 'Past Notes',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PastNotesPage(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+
+                IconButton(
+                  icon: const Icon(Icons.person, color: Colors.black),
+                  tooltip: 'Profile',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                const ProfileView(showBackButton: true),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -325,9 +348,16 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '📩 Appointment Requests',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Icon(Icons.access_time, color: Colors.pink),
+                SizedBox(width: 8),
+                Text(
+                  'Appointment Requests',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             if (appointments.isEmpty) const Text('No pending requests.'),
@@ -368,36 +398,29 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                           ),
                         ),
                       Wrap(
-                        spacing: 8,
                         runSpacing: 8,
                         children: [
-                          ElevatedButton(
-                            onPressed:
-                                () => _updateStatus(appt['id'], 'approved'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE7636E),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed:
+                                  () => _updateStatus(appt['id'], 'approved'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFE7636E),
+                              ),
+                              child: const Text('Approve'),
                             ),
-                            child: const Text('Approve'),
                           ),
-                          ElevatedButton(
-                            onPressed:
-                                () => _updateStatus(appt['id'], 'rejected'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed:
+                                  () => _updateStatus(appt['id'], 'rejected'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                              ),
+                              child: const Text('Reject'),
                             ),
-                            child: const Text('Reject'),
-                          ),
-                          ElevatedButton(
-                            onPressed:
-                                () => _showNotesDialog(appt['id'], notes),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                            ),
-                            child: const Text('Complete & Add Notes'),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('View Details'),
                           ),
                         ],
                       ),
@@ -419,25 +442,93 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '📅 Today\'s Schedule',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Icon(Icons.calendar_today, color: Colors.pink),
+                SizedBox(width: 8),
+                Text(
+                  'Today\'s Schedule',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             if (todayAppointments.isEmpty)
               const Text('No appointments for today.'),
             ...todayAppointments.map((item) {
               final notes = item['notes'] ?? '';
+              final status = (item['status'] ?? '').toLowerCase();
 
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  '${item['preferredTime'] ?? ''} - ${item['fullName'] ?? ''}',
+              Color badgeColor;
+              Color badgeTextColor;
+              switch (status) {
+                case 'approved':
+                  badgeColor = Colors.green[100]!;
+                  badgeTextColor = Colors.green;
+                  break;
+                case 'rejected':
+                  badgeColor = Colors.red[100]!;
+                  badgeTextColor = Colors.red;
+                  break;
+                case 'completed':
+                  badgeColor = Colors.grey[300]!;
+                  badgeTextColor = Colors.grey[800]!;
+                  break;
+                default:
+                  badgeColor = Colors.orange[100]!;
+                  badgeTextColor = Colors.orange;
+              }
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey[200]!),
                 ),
-                subtitle: Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${item['appointmentType'] ?? ''}'),
+                    // First row: time, name, badge
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${item['preferredTime'] ?? ''} - ${item['fullName'] ?? ''}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: badgeColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            item['status'] ?? 'pending',
+                            style: TextStyle(
+                              color: badgeTextColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${item['appointmentType'] ?? ''}',
+                      style: const TextStyle(fontSize: 13),
+                    ),
                     if (notes.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0),
@@ -449,41 +540,20 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                           ),
                         ),
                       ),
-                  ],
-                ),
-                trailing: Wrap(
-                  spacing: 8,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            (item['status'] ?? '').toLowerCase() == 'approved'
-                                ? Colors.green[100]
-                                : Colors.orange[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        item['status'] ?? 'pending',
-                        style: TextStyle(
-                          color:
-                              (item['status'] ?? '').toLowerCase() == 'approved'
-                                  ? Colors.green
-                                  : Colors.orange,
-                          fontWeight: FontWeight.bold,
+                    if (status != 'completed' && status != 'rejected')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed:
+                                () => _showNotesDialog(item['id'], notes),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            child: const Text('Complete & Add Notes'),
+                          ),
                         ),
-                      ),
-                    ),
-                    if ((item['status'] ?? '').toLowerCase() != 'completed')
-                      ElevatedButton(
-                        onPressed: () => _showNotesDialog(item['id'], notes),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                        child: const Text('Complete & Add Notes'),
                       ),
                   ],
                 ),
@@ -497,37 +567,112 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
 
   Widget _upcomingDaysCard(List<Map<String, dynamic>> allAppointments) {
     final now = DateTime.now();
-    final upcoming = <String, List<Map<String, dynamic>>>{};
+    final upcoming = <DateTime, List<Map<String, dynamic>>>{};
 
+    // Group appointments by date
     for (var appt in allAppointments) {
       final date = DateTime.tryParse(appt['preferredDate'] ?? '');
       if (date != null && date.isAfter(now)) {
-        final dayKey = DateFormat('EEEE, MMM d').format(date);
+        final dayKey = DateTime(date.year, date.month, date.day);
         upcoming.putIfAbsent(dayKey, () => []).add(appt);
       }
     }
 
+    // Sort by date
+    final sortedDates = upcoming.keys.toList()..sort();
+
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '📆 Upcoming Days',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Icon(Icons.calendar_today, color: Colors.pink),
+                SizedBox(width: 8),
+                Text(
+                  'Upcoming Days',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            if (upcoming.isEmpty) const Text('No upcoming appointments.'),
-            ...upcoming.entries.map((entry) {
-              return ListTile(
-                title: Text(entry.key),
-                subtitle: Text('${entry.value.length} appointments'),
+            const SizedBox(height: 16),
+            if (sortedDates.isEmpty) const Text('No upcoming appointments.'),
+            ...sortedDates.map((date) {
+              final bookedCount = upcoming[date]!.length;
+              final remainingSlots = 8 - bookedCount;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Left side
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _formatDateLabel(date, now),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '$bookedCount appointments',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Right side
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'Available slots',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                        Text(
+                          '$remainingSlots',
+                          style: TextStyle(
+                            color:
+                                remainingSlots > 0 ? Colors.pink : Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               );
             }),
           ],
         ),
       ),
     );
+  }
+
+  // Helper to format date like "Tomorrow", "Sat, Mar 16"
+  String _formatDateLabel(DateTime date, DateTime now) {
+    final tomorrow = now.add(const Duration(days: 1));
+    if (date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day) {
+      return 'Tomorrow';
+    }
+    return DateFormat('E, MMM d').format(date);
   }
 }
