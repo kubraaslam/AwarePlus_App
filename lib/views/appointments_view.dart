@@ -19,7 +19,6 @@ class MyAppointmentsView extends StatelessWidget {
       );
     }
 
-    // Reference to appointments collection filtered by user email or uid
     final appointmentsQuery = FirebaseFirestore.instance
         .collection('appointments')
         .where('email', isEqualTo: user.email)
@@ -90,24 +89,28 @@ class MyAppointmentsView extends StatelessWidget {
                               .collection('appointments')
                               .doc(docs[index].id)
                               .delete();
-                              
-                          // ignore: use_build_context_synchronously
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Appointment removed'),
-                            ),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Appointment removed'),
+                              ),
+                            );
+                          }
                         }
                       } else if (value == 'reschedule') {
                         Navigator.pushNamed(
                           context,
-                          '/bookAppointment', // Change to your actual route
+                          '/bookAppointment',
                           arguments: {
-                            'appointmentId':
-                                docs[index].id, // Needed for update
+                            'appointmentId': docs[index].id,
                             'preferredDate': preferredDateStr,
                             'preferredTime': preferredTime,
                             'appointmentType': appointmentType,
+                            'fullName': data['fullName'] ?? '',
+                            'studentId': data['studentId'] ?? '',
+                            'email': data['email'] ?? '',
+                            'phone': data['phone'] ?? '',
+                            'additionalInfo': data['additionalInfo'] ?? '',
                           },
                         );
                       }
@@ -119,7 +122,7 @@ class MyAppointmentsView extends StatelessWidget {
                             value: 'remove',
                             child: Text('Remove'),
                           ),
-                        if (status.toLowerCase() == 'rejected')
+                        if (status.toLowerCase() != 'done')
                           const PopupMenuItem(
                             value: 'reschedule',
                             child: Text('Reschedule'),

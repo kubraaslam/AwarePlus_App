@@ -20,7 +20,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
   DateTime? _selectedDate;
   String? _selectedTime;
   String? _appointmentType;
-  String? _appointmentId; // NEW: For update mode
+  String? _appointmentId; // For rescheduling
 
   final List<String> _times = [
     '09:00 AM',
@@ -48,15 +48,14 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
 
     if (args != null) {
       _appointmentId = args['appointmentId'];
-
       _selectedDate =
           args['preferredDate'] != null
               ? DateTime.tryParse(args['preferredDate'])
               : null;
-      _selectedTime = args['preferredTime'] ?? '';
-      _appointmentType = args['appointmentType'] ?? '';
+      _selectedTime = args['preferredTime'];
+      _appointmentType = args['appointmentType'];
 
-      // Prefill other fields if provided
+      // Prefill other fields, read-only if rescheduling
       _fullNameController.text = args['fullName'] ?? '';
       _studentIdController.text = args['studentId'] ?? '';
       _emailController.text = args['email'] ?? '';
@@ -81,34 +80,35 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
     setState(() => _isSubmitting = true);
 
     final data = {
-      'fullName': _fullNameController.text.trim(),
-      'studentId': _studentIdController.text.trim(),
-      'email': _emailController.text.trim(),
-      'phone': _phoneController.text.trim(),
       'preferredDate': _selectedDate!.toIso8601String(),
       'preferredTime': _selectedTime,
-      'appointmentType': _appointmentType,
-      'additionalInfo': _additionalInfoController.text.trim(),
-      'status': 'pending', // reset status on update
+      'status': 'pending',
       'updatedAt': Timestamp.now(),
     };
 
     if (_appointmentId != null) {
-      // Update existing appointment
+      // Update only date/time for reschedule
       await FirebaseFirestore.instance
           .collection('appointments')
           .doc(_appointmentId)
           .update(data);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Appointment updated successfully!')),
+        const SnackBar(content: Text('Appointment rescheduled successfully!')),
       );
     } else {
-      // Create new appointment
-      await FirebaseFirestore.instance.collection('appointments').add({
+      // New appointment
+      final fullData = {
         ...data,
+        'fullName': _fullNameController.text.trim(),
+        'studentId': _studentIdController.text.trim(),
+        'email': _emailController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'appointmentType': _appointmentType,
+        'additionalInfo': _additionalInfoController.text.trim(),
         'createdAt': Timestamp.now(),
-      });
+      };
+      await FirebaseFirestore.instance.collection('appointments').add(fullData);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Appointment booked successfully!')),
@@ -116,19 +116,9 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
     }
 
     setState(() => _isSubmitting = false);
-    if (!mounted) return;
 
-    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/support');
-
-    _formKey.currentState!.reset();
-    setState(() {
-      _selectedDate = null;
-      _selectedTime = null;
-      _appointmentType = null;
-      _appointmentId = null;
-    });
   }
 
   void _showInfoDialog() {
@@ -189,8 +179,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -240,6 +228,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                 border: OutlineInputBorder(),
                               ),
                               validator: (v) => v!.isEmpty ? 'Required' : null,
+                              readOnly: _appointmentId != null,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -251,6 +240,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                 border: OutlineInputBorder(),
                               ),
                               validator: (v) => v!.isEmpty ? 'Required' : null,
+                              readOnly: _appointmentId != null,
                             ),
                           ),
                         ],
@@ -264,6 +254,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) => v!.isEmpty ? 'Required' : null,
+                        readOnly: _appointmentId != null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -274,6 +265,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         ),
                         keyboardType: TextInputType.phone,
                         validator: (v) => v!.isEmpty ? 'Required' : null,
+                        readOnly: _appointmentId != null,
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -281,11 +273,16 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                           Expanded(
                             child: InkWell(
                               onTap: () async {
+                                final today = DateTime.now();
                                 final date = await showDatePicker(
                                   context: context,
-                                  initialDate: _selectedDate ?? DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime.now().add(
+                                  initialDate:
+                                      _selectedDate != null &&
+                                              _selectedDate!.isAfter(today)
+                                          ? _selectedDate!
+                                          : today,
+                                  firstDate: today,
+                                  lastDate: today.add(
                                     const Duration(days: 365),
                                   ),
                                 );
@@ -315,14 +312,56 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                 border: OutlineInputBorder(),
                               ),
                               items:
-                                  _times
-                                      .map(
-                                        (t) => DropdownMenuItem(
-                                          value: t,
-                                          child: Text(t),
+                                  _times.map((t) {
+                                    bool isPast = false;
+                                    if (_selectedDate != null) {
+                                      final now = DateTime.now();
+                                      final today = DateTime(
+                                        now.year,
+                                        now.month,
+                                        now.day,
+                                      );
+                                      final selectedDay = DateTime(
+                                        _selectedDate!.year,
+                                        _selectedDate!.month,
+                                        _selectedDate!.day,
+                                      );
+                                      if (selectedDay.isAtSameMomentAs(today)) {
+                                        // convert time string to 24-hour int
+                                        final parts = t.split(':');
+                                        int hour = int.parse(parts[0]);
+                                        int minute = int.parse(
+                                          parts[1].split(' ')[0],
+                                        );
+                                        if (t.contains('PM') && hour != 12) {
+                                          hour += 12;
+                                        }
+                                        final slotTime = DateTime(
+                                          now.year,
+                                          now.month,
+                                          now.day,
+                                          hour,
+                                          minute,
+                                        );
+                                        if (slotTime.isBefore(now)) {
+                                          isPast = true;
+                                        }
+                                      }
+                                    }
+                                    return DropdownMenuItem(
+                                      value: t,
+                                      enabled: !isPast,
+                                      child: Text(
+                                        t,
+                                        style: TextStyle(
+                                          color:
+                                              isPast
+                                                  ? Colors.grey
+                                                  : Colors.black,
                                         ),
-                                      )
-                                      .toList(),
+                                      ),
+                                    );
+                                  }).toList(),
                               onChanged:
                                   (v) => setState(() => _selectedTime = v),
                               validator: (v) => v == null ? 'Required' : null,
@@ -346,7 +385,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                   ),
                                 )
                                 .toList(),
-                        onChanged: (v) => setState(() => _appointmentType = v),
+                        onChanged:
+                            _appointmentId == null
+                                ? (v) => setState(() => _appointmentType = v)
+                                : null,
                         validator: (v) => v == null ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
@@ -357,6 +399,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 3,
+                        readOnly: _appointmentId != null,
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
