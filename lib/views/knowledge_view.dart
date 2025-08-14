@@ -1,3 +1,5 @@
+import 'package:aware_plus/data/topics_data.dart';
+import 'package:aware_plus/models/topic.dart';
 import 'package:aware_plus/views/topic_detail_view.dart';
 import 'package:aware_plus/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -11,24 +13,17 @@ class KnowledgeView extends StatefulWidget {
 
 class _KnowledgeViewState extends State<KnowledgeView> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _allTopics = [
-    'Sexual and Reproductive Health Education',
-    'Physical Sexual Health',
-    'Rights, Laws & Ethics',
-    'Myths & Misconceptions',
-  ];
-
   String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
-    final filteredTopics =
-        _allTopics
-            .where(
-              (topic) =>
-                  topic.toLowerCase().contains(_searchQuery.toLowerCase()),
-            )
-            .toList();
+    final filteredTopics = topics
+        .where(
+          (topic) => topic.title.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ),
+        )
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -79,9 +74,8 @@ class _KnowledgeViewState extends State<KnowledgeView> {
               Expanded(
                 child: ListView.builder(
                   itemCount: filteredTopics.length,
-                  itemBuilder:
-                      (context, index) =>
-                          _buildTopicTile(context, filteredTopics[index]),
+                  itemBuilder: (context, index) =>
+                      _buildTopicTile(context, filteredTopics[index]),
                 ),
               ),
             ],
@@ -109,7 +103,7 @@ class _KnowledgeViewState extends State<KnowledgeView> {
     );
   }
 
-  Widget _buildTopicTile(BuildContext context, String title) {
+  Widget _buildTopicTile(BuildContext context, Topic topic) {
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(
@@ -119,13 +113,17 @@ class _KnowledgeViewState extends State<KnowledgeView> {
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        title: Text(title),
+        title: Text(topic.title),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => TopicDetailView(topicTitle: title),
+              builder: (_) => TopicDetailView(
+                topicTitle: topic.title,
+                topicDescription: topic.description,
+                subtopics: topic.subtopics,
+              ),
             ),
           );
         },
