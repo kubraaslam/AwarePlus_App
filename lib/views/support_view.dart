@@ -7,10 +7,9 @@ class SupportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFE7636E),
+        backgroundColor: const Color(0xFFC9184A),
         elevation: 0,
         title: const Text(
           'Support Services',
@@ -31,7 +30,7 @@ class SupportView extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Colors.grey.shade500),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -55,14 +54,14 @@ class SupportView extends StatelessWidget {
                       Navigator.pushNamed(context, '/bookAppointment');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE7636E),
+                      backgroundColor: const Color(0xFFFF758F),
                       foregroundColor: Colors.white,
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: const Text('Book an Appointment'),
+                    child: const Text('Book Appointment'),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
@@ -70,11 +69,11 @@ class SupportView extends StatelessWidget {
                       Navigator.pushNamed(context, '/myAppointments');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE7636E), // Or any color you prefer
+                      backgroundColor: const Color(0xFFFF758F), // Or any color you prefer
                       foregroundColor: Colors.white,
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     child: const Text('My Appointments'),
@@ -89,6 +88,7 @@ class SupportView extends StatelessWidget {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.grey.shade400)
               ),
               elevation: 1,
               child: ListTile(
@@ -106,6 +106,7 @@ class SupportView extends StatelessWidget {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.grey.shade400)
               ),
               elevation: 1,
               child: ListTile(

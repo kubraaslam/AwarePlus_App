@@ -29,13 +29,14 @@ class _QuizPageState extends State<QuizPage> {
     String topicId,
     String subtopicId,
   ) async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('quizzes')
-        .doc(topicId)
-        .collection('subtopics')
-        .doc(subtopicId)
-        .collection('questions')
-        .get();
+    final querySnapshot =
+        await FirebaseFirestore.instance
+            .collection('quizzes')
+            .doc(topicId)
+            .collection('subtopics')
+            .doc(subtopicId)
+            .collection('questions')
+            .get();
 
     return querySnapshot.docs.map((doc) {
       final data = doc.data();
@@ -69,9 +70,13 @@ class _QuizPageState extends State<QuizPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Quiz"),
-        backgroundColor: const Color.fromARGB(255, 209, 65, 113),
-        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          "Quiz",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFC9184A),
         elevation: 0,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -190,10 +195,11 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
     Navigator.of(context)
         .pushReplacement(
           MaterialPageRoute(
-            builder: (context) => QuizResultPage(
-              score: score,
-              totalQuestions: widget.questions.length,
-            ),
+            builder:
+                (context) => QuizResultPage(
+                  score: score,
+                  totalQuestions: widget.questions.length,
+                ),
           ),
         )
         .then((_) {
@@ -277,9 +283,7 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...answeredWidgets.map(buildAnsweredQuestion),
-                  ],
+                  children: [...answeredWidgets.map(buildAnsweredQuestion)],
                 ),
               ),
             ),
@@ -288,10 +292,10 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
               child: ElevatedButton(
                 onPressed: _goToResults,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 209, 65, 113),
+                  backgroundColor: const Color(0xFFFF758F),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(50),
                   ),
                 ),
                 child: const Text(
@@ -316,7 +320,7 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
             LinearProgressIndicator(
               value: (currentQuestionIndex + 1) / widget.questions.length,
               backgroundColor: Colors.grey[300],
-              color: const Color.fromARGB(255, 246, 154, 185),
+              color: const Color(0xFFFFB3C1),
               minHeight: 8,
             ),
             const SizedBox(height: 24),
@@ -352,19 +356,25 @@ class _QuizUIState extends State<QuizUI> with SingleTickerProviderStateMixin {
                     if (answered) {
                       final optClean = option.toString().trim().toLowerCase();
                       final correctClean =
-                          question['correctAnswer'].toString().trim().toLowerCase();
+                          question['correctAnswer']
+                              .toString()
+                              .trim()
+                              .toLowerCase();
                       final selectedClean =
-                          (selectedOption ?? "").toString().trim().toLowerCase();
+                          (selectedOption ?? "")
+                              .toString()
+                              .trim()
+                              .toLowerCase();
 
                       if (optClean == correctClean) {
                         buttonColor = Colors.green;
                       } else if (optClean == selectedClean) {
                         buttonColor = Colors.red;
                       } else {
-                        buttonColor = Colors.pink.shade300;
+                        buttonColor = Color(0xFFFF758F);
                       }
                     } else {
-                      buttonColor = Colors.pink.shade300;
+                      buttonColor = Color(0xFFFF758F);
                     }
 
                     return Padding(

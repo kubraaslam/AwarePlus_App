@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-
 import 'package:aware_plus/widgets/bottom_nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,7 +73,10 @@ class _ProfileViewState extends State<ProfileView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               TextButton(
                 onPressed: () async {
@@ -119,7 +121,10 @@ class _ProfileViewState extends State<ProfileView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               TextButton(
                 onPressed: () async {
@@ -173,7 +178,10 @@ class _ProfileViewState extends State<ProfileView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               TextButton(
                 onPressed: () async {
@@ -225,7 +233,7 @@ class _ProfileViewState extends State<ProfileView> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 229, 117, 126),
+        backgroundColor: const Color(0xFFC9184A),
         centerTitle: true,
       ),
       body: Padding(
@@ -321,7 +329,10 @@ class _ProfileViewState extends State<ProfileView> {
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context, false),
-                            child: const Text("Cancel"),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
@@ -344,7 +355,7 @@ class _ProfileViewState extends State<ProfileView> {
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade500,
+                backgroundColor: Colors.red,
                 minimumSize: const Size(double.infinity, 50),
               ),
             ),

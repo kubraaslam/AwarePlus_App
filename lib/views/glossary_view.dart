@@ -24,8 +24,9 @@ class _GlossaryViewState extends State<GlossaryView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Glossary'),
-        backgroundColor: Colors.pink[300],
+        title: const Text('Glossary', style: TextStyle(fontSize: 20)),
+        backgroundColor: const Color(0xFFC9184A),
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
@@ -62,7 +63,7 @@ class _GlossaryViewState extends State<GlossaryView> {
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true, // Full height if needed
-                        backgroundColor: Colors.white,
+                        backgroundColor: Color(0xFFFFCCD5),
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(20),
@@ -82,15 +83,15 @@ class _GlossaryViewState extends State<GlossaryView> {
                                         Text(
                                           item['term']!,
                                           style: const TextStyle(
-                                            fontSize: 22,
+                                            fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.pink,
+                                            color: Color(0xFF800F2F),
                                           ),
                                         ),
                                         const SizedBox(height: 12),
                                         Text(
                                           item['definition']!,
-                                          style: const TextStyle(fontSize: 18),
+                                          style: const TextStyle(fontSize: 16),
                                         ),
                                       ],
                                     ),

@@ -57,7 +57,10 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Add Session Notes'),
+            title: const Text(
+              'Add Session Notes',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             content: TextField(
               controller: notesController,
               maxLines: 5,
@@ -69,13 +72,20 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(), // Cancel
-                child: const Text('Cancel'),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
                   _completeSessionWithNotes(docId, notesController.text.trim());
                   Navigator.of(context).pop();
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF758F),
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Save & Complete'),
               ),
             ],
@@ -88,17 +98,17 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F6F8),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFE7636E),
+        backgroundColor: const Color(0xFFC9184A),
+        foregroundColor: Colors.white,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.note_alt, color: Colors.black),
+                  icon: const Icon(Icons.note_alt),
                   tooltip: 'Past Notes',
                   onPressed: () {
                     Navigator.push(
@@ -111,7 +121,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                 ),
 
                 IconButton(
-                  icon: const Icon(Icons.person, color: Colors.black),
+                  icon: const Icon(Icons.person),
                   tooltip: 'Profile',
                   onPressed: () {
                     Navigator.push(
@@ -215,7 +225,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                         const SizedBox(height: 4),
                         Text(
                           'You have ${pendingAppointments.length} appointment requests and ${todayAppointments.length} sessions scheduled for today.',
-                          style: const TextStyle(color: Colors.grey),
+                          style: const TextStyle(color: Colors.black54),
                         ),
                         const SizedBox(height: 16),
 
@@ -314,13 +324,13 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: const Color(0xFFE7636E), size: 28),
+              Icon(icon, color: const Color(0xFFC9184A), size: 28),
               const SizedBox(height: 6),
               Text(
                 value,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 18,
                 ),
               ),
               const SizedBox(height: 4),
@@ -332,7 +342,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
               const SizedBox(height: 4),
               Text(
                 title,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
+                style: const TextStyle(color: Colors.black54, fontSize: 12),
               ),
             ],
           ),
@@ -343,6 +353,14 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
 
   Widget _appointmentRequestsCard(List<Map<String, dynamic>> appointments) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16), // rounded corners
+        side: const BorderSide(
+          color: Color(0xFFFFCCD5), // border color
+          width: 1, // border thickness
+        ),
+      ),
+      elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -351,7 +369,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
-                Icon(Icons.access_time, color: Colors.pink),
+                Icon(Icons.access_time, color: Color(0xFFC9184A)),
                 SizedBox(width: 8),
                 Text(
                   'Appointment Requests',
@@ -372,59 +390,66 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade200),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        appt['fullName'] ?? 'Unknown Student',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text('$formattedDate • ${appt['preferredTime'] ?? ''}'),
-                      const SizedBox(height: 4),
-                      Text('Topic: ${appt['appointmentType'] ?? 'N/A'}'),
-                      if (notes.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 6.0, bottom: 6.0),
-                          child: Text(
-                            'Notes: $notes',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
+                child: Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appt['fullName'] ?? 'Unknown Student',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      Wrap(
-                        runSpacing: 8,
-                        children: [
+                        const SizedBox(height: 4),
+                        Text('$formattedDate • ${appt['preferredTime'] ?? ''}'),
+                        const SizedBox(height: 4),
+                        Text('Topic: ${appt['appointmentType'] ?? 'N/A'}'),
+                        if (notes.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              onPressed:
-                                  () => _updateStatus(appt['id'], 'approved'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFE7636E),
-                              ),
-                              child: const Text('Approve'),
+                            padding: const EdgeInsets.only(
+                              top: 6.0,
+                              bottom: 6.0,
+                            ),
+                            child: Text(
+                              'Notes: $notes',
+                              style: TextStyle(color: Colors.grey[700]),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              onPressed:
-                                  () => _updateStatus(appt['id'], 'rejected'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey,
+                        Wrap(
+                          runSpacing: 8,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed:
+                                    () => _updateStatus(appt['id'], 'approved'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFFF758F),
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text('Approve'),
                               ),
-                              child: const Text('Reject'),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed:
+                                    () => _updateStatus(appt['id'], 'rejected'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey,
+                                  foregroundColor: Colors.red,
+                                ),
+                                child: const Text('Reject'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -437,6 +462,14 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
 
   Widget _todayScheduleCard(List<Map<String, dynamic>> todayAppointments) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16), // rounded corners
+        side: const BorderSide(
+          color: Color(0xFFFFCCD5), // border color
+          width: 2, // border thickness
+        ),
+      ),
+      elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -445,7 +478,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
-                Icon(Icons.calendar_today, color: Colors.pink),
+                Icon(Icons.calendar_today, color: Color(0xFFC9184A)),
                 SizedBox(width: 8),
                 Text(
                   'Today\'s Schedule',
@@ -488,74 +521,79 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey[200]!),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // First row: time, name, badge
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${item['preferredTime'] ?? ''} - ${item['fullName'] ?? ''}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // First row: time, name, badge
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${item['preferredTime'] ?? ''} - ${item['fullName'] ?? ''}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: badgeColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              item['status'] ?? 'pending',
+                              style: TextStyle(
+                                color: badgeTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                          decoration: BoxDecoration(
-                            color: badgeColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${item['appointmentType'] ?? ''}',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      if (notes.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            item['status'] ?? 'pending',
+                            'Notes: $notes',
                             style: TextStyle(
-                              color: badgeTextColor,
-                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[700],
+                              fontSize: 12,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${item['appointmentType'] ?? ''}',
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                    if (notes.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          'Notes: $notes',
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    if (status != 'completed' && status != 'rejected')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed:
-                                () => _showNotesDialog(item['id'], notes),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                      if (status != 'completed' && status != 'rejected')
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed:
+                                  () => _showNotesDialog(item['id'], notes),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                              child: const Text(
+                                'Complete & Add Notes',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-                            child: const Text('Complete & Add Notes'),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }),
@@ -582,7 +620,13 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
     final sortedDates = upcoming.keys.toList()..sort();
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16), // rounded corners
+        side: const BorderSide(
+          color: Color(0xFFFFCCD5), // border color
+          width: 2, // border thickness
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -591,7 +635,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
-                Icon(Icons.calendar_today, color: Colors.pink),
+                Icon(Icons.calendar_today, color: Color(0xFFC9184A)),
                 SizedBox(width: 8),
                 Text(
                   'Upcoming Days',

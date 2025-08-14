@@ -126,7 +126,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Appointment Information'),
+            title: const Text(
+              'Appointment Information',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +139,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
-                  Text('Student Support Services\nSSS@apit.lk'),
+                  Text('Student Support Services: SSS@apiit.lk'),
                   SizedBox(height: 8),
                   Text('Office Hours:\nMon-Fri 9:00 AM - 5:00 PM'),
                   SizedBox(height: 16),
@@ -155,7 +158,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(color: Color(0xFFA4133C)),
+                ),
               ),
             ],
           ),
@@ -185,8 +191,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
           _appointmentId != null
               ? 'Reschedule Appointment'
               : 'Book Appointment',
+          style: TextStyle(fontSize: 20),
         ),
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: const Color(0xFFC9184A),
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -407,8 +415,8 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                         child: ElevatedButton(
                           onPressed: _isSubmitting ? null : _submitForm,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            backgroundColor: Color(0xFFFF758F),
+                            padding: const EdgeInsets.all(20),
                           ),
                           child:
                               _isSubmitting
@@ -421,6 +429,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                     _appointmentId != null
                                         ? 'Update Appointment'
                                         : 'Book Appointment',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
                                   ),
                         ),
                       ),

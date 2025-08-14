@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:aware_plus/models/learning_models.dart';
 import 'package:aware_plus/views/quiz_view.dart';
-import 'package:flutter/material.dart';
 
 class ModuleView extends StatelessWidget {
   final List<LearningModels> learningModels;
@@ -14,8 +14,34 @@ class ModuleView extends StatelessWidget {
     required this.subtopicId,
   });
 
-  Widget _buildSection(LearningModels learningModel) {
+  void _showFullImage(BuildContext context, String imagePath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            iconTheme: const IconThemeData(color: Colors.white),
+            elevation: 0,
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              clipBehavior: Clip.none,
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Image.asset(imagePath),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(BuildContext context, LearningModels learningModel) {
     return Card(
+      color: const Color(0xFFFFB3C1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -23,39 +49,51 @@ class ModuleView extends StatelessWidget {
         title: Text(
           learningModel.title,
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color(0xFFE7636E),
+            color: Colors.black,
           ),
         ),
         childrenPadding: const EdgeInsets.all(16),
         children: [
-          // Infographic / Image placeholder
-          Container(
-            height: 160,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
+          if (learningModel.infographicImage != null)
+            GestureDetector(
+              onTap: () => _showFullImage(context, learningModel.infographicImage!),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  learningModel.infographicImage!,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+          else
+            Container(
+              height: 160,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                learningModel.infographicDesc,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.black54, fontSize: 16),
+              ),
             ),
-            alignment: Alignment.center,
-            child: Text(
-              learningModel.infographicDesc,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black54, fontSize: 16),
-            ),
-          ),
+
           const SizedBox(height: 12),
 
-          // Key Points
-          Align(
+          const Align(
             alignment: Alignment.centerLeft,
-            child: const Text(
+            child: Text(
               "Key Points:",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Color(0xFF2CB2BC),
+                color: Color(0xFFC9184A),
               ),
             ),
           ),
@@ -76,7 +114,6 @@ class ModuleView extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
-          // Quick Fact
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -102,22 +139,25 @@ class ModuleView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(subtopicId, style: TextStyle(fontSize: 18),),
-        backgroundColor: const Color(0xFFE7636E),
+        title: Text(
+          subtopicId,
+          style: const TextStyle(fontSize: 18, color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFFC9184A),
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          ...learningModels.map(_buildSection),
+          ...learningModels.map((lm) => _buildSection(context, lm)),
           const SizedBox(height: 20),
 
-          // Single Start Quiz button at the bottom
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2CB2BC),
+                backgroundColor: const Color(0xFFFF4D6D),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -127,11 +167,8 @@ class ModuleView extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) => QuizPage(
-                          topicId: topicId,
-                          subtopicId: subtopicId,
-                        ),
+                    builder: (context) =>
+                        QuizPage(topicId: topicId, subtopicId: subtopicId),
                   ),
                 );
               },

@@ -29,7 +29,7 @@ class WelcomeView extends StatelessWidget {
                   SizedBox(height: 50),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                      backgroundColor: const Color(0xFFC9184A),
                       padding: EdgeInsets.all(20),
                       minimumSize: Size(250, 36),
                       shape: RoundedRectangleBorder(
@@ -45,7 +45,7 @@ class WelcomeView extends StatelessWidget {
                   SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                      backgroundColor: const Color(0xFFC9184A),
                       padding: EdgeInsets.all(20),
                       minimumSize: Size(250, 36),
                       shape: RoundedRectangleBorder(

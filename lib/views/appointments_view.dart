@@ -26,8 +26,9 @@ class MyAppointmentsView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Appointments'),
-        backgroundColor: const Color(0xFFE7636E),
+        title: const Text('My Appointments', style: TextStyle(fontSize: 20)),
+        backgroundColor: const Color(0xFFC9184A),
+        foregroundColor: Colors.white,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: appointmentsQuery.snapshots(),
@@ -81,56 +82,67 @@ class MyAppointmentsView extends StatelessWidget {
                     'Type: $appointmentType\nStatus: ${status[0].toUpperCase()}${status.substring(1)}',
                   ),
                   isThreeLine: true,
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (value) async {
-                      if (value == 'remove') {
-                        if (status.toLowerCase() != 'done') {
-                          await FirebaseFirestore.instance
-                              .collection('appointments')
-                              .doc(docs[index].id)
-                              .delete();
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Appointment removed'),
-                              ),
-                            );
-                          }
-                        }
-                      } else if (value == 'reschedule') {
-                        Navigator.pushNamed(
-                          context,
-                          '/bookAppointment',
-                          arguments: {
-                            'appointmentId': docs[index].id,
-                            'preferredDate': preferredDateStr,
-                            'preferredTime': preferredTime,
-                            'appointmentType': appointmentType,
-                            'fullName': data['fullName'] ?? '',
-                            'studentId': data['studentId'] ?? '',
-                            'email': data['email'] ?? '',
-                            'phone': data['phone'] ?? '',
-                            'additionalInfo': data['additionalInfo'] ?? '',
-                          },
-                        );
-                      }
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        if (status.toLowerCase() != 'done')
-                          const PopupMenuItem(
-                            value: 'remove',
-                            child: Text('Remove'),
+                  trailing:
+                      status.toLowerCase() == 'completed'
+                          ? null
+                          : PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'remove') {
+                                if (status.toLowerCase() != 'completed') {
+                                  await FirebaseFirestore.instance
+                                      .collection('appointments')
+                                      .doc(docs[index].id)
+                                      .delete();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Appointment removed'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              } else if (value == 'reschedule') {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/bookAppointment',
+                                  arguments: {
+                                    'appointmentId': docs[index].id,
+                                    'preferredDate': preferredDateStr,
+                                    'preferredTime': preferredTime,
+                                    'appointmentType': appointmentType,
+                                    'fullName': data['fullName'] ?? '',
+                                    'studentId': data['studentId'] ?? '',
+                                    'email': data['email'] ?? '',
+                                    'phone': data['phone'] ?? '',
+                                    'additionalInfo':
+                                        data['additionalInfo'] ?? '',
+                                  },
+                                );
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              if (status.toLowerCase() == 'completed') {
+                                // No menu for completed appointments
+                                return [];
+                              }
+
+                              return [
+                                const PopupMenuItem(
+                                  value: 'remove',
+                                  child: Text(
+                                    'Remove',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                                if (status.toLowerCase() == 'rejected')
+                                  const PopupMenuItem(
+                                    value: 'reschedule',
+                                    child: Text('Reschedule'),
+                                  ),
+                              ];
+                            },
+                            icon: const Icon(Icons.more_vert),
                           ),
-                        if (status.toLowerCase() != 'done')
-                          const PopupMenuItem(
-                            value: 'reschedule',
-                            child: Text('Reschedule'),
-                          ),
-                      ];
-                    },
-                    icon: const Icon(Icons.more_vert),
-                  ),
                 ),
               );
             },

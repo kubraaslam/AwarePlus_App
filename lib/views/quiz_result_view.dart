@@ -32,9 +32,13 @@ class QuizResultPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Quiz Result"),
-        backgroundColor: const Color.fromARGB(255, 209, 65, 113),
-        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          "Quiz Result",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFC9184A),
         elevation: 0,
       ),
       body: Center(
@@ -111,8 +115,7 @@ class QuizResultPage extends StatelessWidget {
                     ); // Go back to topics
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 209, 65, 113),
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFFFF4D6D),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -125,6 +128,7 @@ class QuizResultPage extends StatelessWidget {
                       fontSize: 18,
                       letterSpacing: 0.9,
                       fontWeight: FontWeight.w600,
+                      color: Colors.white
                     ),
                   ),
                 ),

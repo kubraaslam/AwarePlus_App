@@ -15,12 +15,14 @@ class TopicDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF2CB2BC);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(topicTitle, style: const TextStyle(fontSize: 18)),
-        backgroundColor: const Color(0xFFE5757E),
+        title: Text(
+          topicTitle,
+          style: const TextStyle(fontSize: 18, color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFFC9184A),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -44,17 +46,17 @@ class TopicDetailView extends StatelessWidget {
                 _InfoBadge(
                   icon: Icons.access_time,
                   label: '2h',
-                  color: Colors.green,
+                  color: Color(0xFFFF4D6D),
                 ),
                 _InfoBadge(
                   icon: Icons.menu_book,
                   label: '${subtopics.length} modules',
-                  color: Colors.orange,
+                  color: Color(0xFFA4133C),
                 ),
                 _InfoBadge(
                   icon: Icons.check_circle,
                   label: '0/${subtopics.length} completed',
-                  color: Colors.blue,
+                  color: Color(0xFF590D22),
                 ),
               ],
             ),
@@ -66,7 +68,7 @@ class TopicDetailView extends StatelessWidget {
             const SizedBox(height: 4),
             LinearProgressIndicator(
               value: 0,
-              color: primaryColor,
+              color: const Color.fromARGB(255, 44, 188, 61),
               backgroundColor: Colors.grey.shade300,
             ),
             const SizedBox(height: 16),
@@ -79,11 +81,27 @@ class TopicDetailView extends StatelessWidget {
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: Text(subtopic.title),
+                    title: Text(
+                      subtopic.title,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     subtitle: Text(subtopic.description),
                     trailing: ElevatedButton(
                       onPressed: () => subtopic.onStart!(context),
-                      child: const Text('Start'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFF758F), // Button fill
+
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Start',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -112,6 +130,7 @@ class _InfoBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
       ),

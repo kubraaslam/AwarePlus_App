@@ -31,7 +31,7 @@ class _KnowledgeViewState extends State<KnowledgeView> {
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: const Color(0xFFE7636E),
+          backgroundColor: const Color(0xFFC9184A),
           elevation: 0,
           title: const Text(
             'Knowledge Center',

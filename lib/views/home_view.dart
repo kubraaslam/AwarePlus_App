@@ -110,7 +110,7 @@ class _HomeViewState extends State<HomeView> {
                     Navigator.pushNamed(context, '/knowledge');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                    backgroundColor: const Color(0xFFC9184A),
                     minimumSize: Size(double.infinity, 120),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -127,7 +127,7 @@ class _HomeViewState extends State<HomeView> {
                     Navigator.pushReplacementNamed(context, '/support');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 231, 99, 110),
+                    backgroundColor: const Color(0xFFC9184A),
                     minimumSize: Size(double.infinity, 120),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
