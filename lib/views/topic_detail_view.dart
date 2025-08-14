@@ -15,17 +15,14 @@ class TopicDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF2CB2BC); // example color for badges
+    const Color primaryColor = Color(0xFF2CB2BC);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          topicTitle,
-          style: const TextStyle(fontSize: 18),
-        ),
+        title: Text(topicTitle, style: const TextStyle(fontSize: 18)),
         backgroundColor: const Color(0xFFE5757E),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,42 +37,57 @@ class TopicDetailView extends StatelessWidget {
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 16),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
-                _InfoBadge(icon: Icons.access_time, label: '45 min', color: Colors.green),
-                const SizedBox(width: 8),
-                _InfoBadge(icon: Icons.menu_book, label: '${subtopics.length} modules', color: Colors.orange),
-                const SizedBox(width: 8),
-                _InfoBadge(icon: Icons.check_circle, label: '0/${subtopics.length} completed', color: Colors.blue),
+                _InfoBadge(
+                  icon: Icons.access_time,
+                  label: '2h',
+                  color: Colors.green,
+                ),
+                _InfoBadge(
+                  icon: Icons.menu_book,
+                  label: '${subtopics.length} modules',
+                  color: Colors.orange,
+                ),
+                _InfoBadge(
+                  icon: Icons.check_circle,
+                  label: '0/${subtopics.length} completed',
+                  color: Colors.blue,
+                ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Overall Progress', style: TextStyle(fontSize: 14, color: Colors.grey)),
+            const Text(
+              'Overall Progress',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
             const SizedBox(height: 4),
             LinearProgressIndicator(
-              value: 0, // Update this with actual progress
+              value: 0,
               color: primaryColor,
               backgroundColor: Colors.grey.shade300,
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: subtopics.length,
-                itemBuilder: (context, index) {
-                  final subtopic = subtopics[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text(subtopic.title),
-                      subtitle: Text(subtopic.description),
-                      trailing: ElevatedButton(
-                        onPressed: () => subtopic.onStart!(context),
-                        child: const Text('Start'),
-                      ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: subtopics.length,
+              itemBuilder: (context, index) {
+                final subtopic = subtopics[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: Text(subtopic.title),
+                    subtitle: Text(subtopic.description),
+                    trailing: ElevatedButton(
+                      onPressed: () => subtopic.onStart!(context),
+                      child: const Text('Start'),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -89,7 +101,11 @@ class _InfoBadge extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _InfoBadge({required this.icon, required this.label, required this.color});
+  const _InfoBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +116,7 @@ class _InfoBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 4),

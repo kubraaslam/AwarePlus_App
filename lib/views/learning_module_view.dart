@@ -102,7 +102,7 @@ class ModuleView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(subtopicId),
+        title: Text(subtopicId, style: TextStyle(fontSize: 18),),
         backgroundColor: const Color(0xFFE7636E),
         elevation: 0,
       ),

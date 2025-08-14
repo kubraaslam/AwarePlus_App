@@ -1,6 +1,7 @@
 class LearningModels {
   final String title;
   final String infographicDesc;
+  final String? infographicImage;
   final List<String> keyPoints;
   final String quickFact;
   final String topicId;
@@ -9,6 +10,7 @@ class LearningModels {
   LearningModels({
     required this.title,
     required this.infographicDesc,
+    this.infographicImage,
     required this.keyPoints,
     required this.quickFact,
     required this.topicId,

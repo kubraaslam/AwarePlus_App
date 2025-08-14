@@ -5,6 +5,7 @@ final srhLearningModels = [
   LearningModels(
     title: "Section 1 – What SRH Really Means",
     infographicDesc: "Infographic: Holistic sexual health snapshot",
+    infographicImage: "assets/infographics/Sexual and Reproductive Health Education/My-Sexual-Health-and-Rights.jpg",
     keyPoints: [
       "SRH isn’t just about avoiding STIs or preventing pregnancy.",
       "It’s about being physically, mentally, and socially healthy in sexual and reproductive life.",
@@ -18,6 +19,7 @@ final srhLearningModels = [
   LearningModels(
     title: "Section 2 – Connection to Overall Well-Being",
     infographicDesc: "Infographic: Wheel of well-being",
+    infographicImage: "assets/infographics/Sexual and Reproductive Health Education/WellnessWheel2.png",
     keyPoints: [
       "Reproductive health affects all genders and all life stages.",
       "Good SRH supports: Healthy pregnancies, Protection from infections, Emotional confidence, Strong social relationships.",
@@ -30,6 +32,7 @@ final srhLearningModels = [
   LearningModels(
     title: "Section 3 – Physical vs. Holistic Health",
     infographicDesc: "Infographic: Physical + Mental + Social overlap",
+    infographicImage: "assets/infographics/Sexual and Reproductive Health Education/Physical-vs-Holistic-Health.jpeg",
     keyPoints: [
       "Sexual health is not only physical.",
       "Mental well-being (confidence, self-esteem) and social aspects (respect, consent) are equally important.",
@@ -42,6 +45,7 @@ final srhLearningModels = [
   LearningModels(
     title: "Section 4 – Why Access Matters",
     infographicDesc: "Infographic: Benefits of SRH access",
+    infographicImage: "assets/infographics/Sexual and Reproductive Health Education/Why-Access-Matters.png",
     keyPoints: [
       "Prevents STIs",
       "Reduces unplanned pregnancies",
@@ -56,6 +60,7 @@ final srhLearningModels = [
   LearningModels(
     title: "Section 5 – SRH & Mental Health",
     infographicDesc: "Infographic: Mind-body connection",
+    infographicImage: "assets/infographics/Sexual and Reproductive Health Education/mind-body-connection.jpeg",
     keyPoints: [
       "Poor SRH can cause anxiety, depression, and stress.",
       "Positive SRH education builds self-esteem and reduces relationship pressures.",
