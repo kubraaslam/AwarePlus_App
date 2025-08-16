@@ -40,27 +40,81 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
     'Other',
   ];
 
+  // Validation Helpers
+  String? _validateName(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Full Name is required';
+    }
+    if (!RegExp(r"^[a-zA-Z\s]+$").hasMatch(value)) {
+      return 'Name can only contain letters';
+    }
+    return null;
+  }
+
+  String? _validateStudentId(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Student ID is required';
+    }
+    // allow letters, numbers
+    if (!RegExp(r"^[A-Za-z0-9]+$").hasMatch(value)) {
+      return 'Invalid Student ID format';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Email is required';
+    }
+    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) {
+      return 'Enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Phone number is required';
+    }
+    if (!RegExp(r"^[0-9]{10}$").hasMatch(value)) {
+      return 'Enter a valid 10-digit phone number';
+    }
+    return null;
+  }
+
+  String? _validateNotes(String? value) {
+    if (value != null && value.length > 250) {
+      return 'Maximum 250 characters allowed';
+    }
+    return null;
+  }
+
+  bool _isInit = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    if (_isInit) {
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
-    if (args != null) {
-      _appointmentId = args['appointmentId'];
-      _selectedDate =
-          args['preferredDate'] != null
-              ? DateTime.tryParse(args['preferredDate'])
-              : null;
-      _selectedTime = args['preferredTime'];
-      _appointmentType = args['appointmentType'];
+      if (args != null) {
+        _appointmentId = args['appointmentId'];
+        _selectedDate =
+            args['preferredDate'] != null
+                ? DateTime.tryParse(args['preferredDate'])
+                : null;
+        _selectedTime = args['preferredTime'];
+        _appointmentType = args['appointmentType'];
 
-      // Prefill other fields, read-only if rescheduling
-      _fullNameController.text = args['fullName'] ?? '';
-      _studentIdController.text = args['studentId'] ?? '';
-      _emailController.text = args['email'] ?? '';
-      _phoneController.text = args['phone'] ?? '';
-      _additionalInfoController.text = args['additionalInfo'] ?? '';
+        // Prefill other fields, read-only if rescheduling
+        _fullNameController.text = args['fullName'] ?? '';
+        _studentIdController.text = args['studentId'] ?? '';
+        _emailController.text = args['email'] ?? '';
+        _phoneController.text = args['phone'] ?? '';
+        _additionalInfoController.text = args['additionalInfo'] ?? '';
+      }
+      _isInit = false; // Prevent resetting on rebuilds
     }
   }
 
@@ -85,6 +139,32 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       'status': 'pending',
       'updatedAt': Timestamp.now(),
     };
+
+    // Check if the selected slot is already booked
+    final querySnapshot =
+        await FirebaseFirestore.instance
+            .collection('appointments')
+            .where('preferredDate', isEqualTo: _selectedDate!.toIso8601String())
+            .where('preferredTime', isEqualTo: _selectedTime)
+            .get();
+
+    // If rescheduling, exclude the current appointment from the check
+    final isSlotTaken = querySnapshot.docs.any(
+      (doc) => _appointmentId == null || doc.id != _appointmentId,
+    );
+
+    if (isSlotTaken) {
+      setState(() => _isSubmitting = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Selected time slot unavailable. Please choose a different time.',
+          ),
+        ),
+      );
+      return;
+    }
 
     if (_appointmentId != null) {
       // Update only date/time for reschedule
@@ -235,7 +315,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                 labelText: 'Full Name',
                                 border: OutlineInputBorder(),
                               ),
-                              validator: (v) => v!.isEmpty ? 'Required' : null,
+                              validator: _validateName,
                               readOnly: _appointmentId != null,
                             ),
                           ),
@@ -247,7 +327,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                                 labelText: 'Student ID',
                                 border: OutlineInputBorder(),
                               ),
-                              validator: (v) => v!.isEmpty ? 'Required' : null,
+                              validator: _validateStudentId,
                               readOnly: _appointmentId != null,
                             ),
                           ),
@@ -261,7 +341,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (v) => v!.isEmpty ? 'Required' : null,
+                        validator: _validateEmail,
                         readOnly: _appointmentId != null,
                       ),
                       const SizedBox(height: 16),
@@ -272,7 +352,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.phone,
-                        validator: (v) => v!.isEmpty ? 'Required' : null,
+                        validator: _validatePhone,
                         readOnly: _appointmentId != null,
                       ),
                       const SizedBox(height: 16),
@@ -281,19 +361,16 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                           Expanded(
                             child: InkWell(
                               onTap: () async {
-                                final today = DateTime.now();
                                 final date = await showDatePicker(
                                   context: context,
-                                  initialDate:
-                                      _selectedDate != null &&
-                                              _selectedDate!.isAfter(today)
-                                          ? _selectedDate!
-                                          : today,
-                                  firstDate: today,
-                                  lastDate: today.add(
+                                  initialDate: _selectedDate ?? DateTime.now(),
+                                  firstDate:
+                                      DateTime.now(), // or some policy, e.g., past appointments cannot go back
+                                  lastDate: DateTime.now().add(
                                     const Duration(days: 365),
                                   ),
                                 );
+
                                 if (date != null) {
                                   setState(() => _selectedDate = date);
                                 }
@@ -407,8 +484,11 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 3,
+                        maxLength: 250,
+                        validator: _validateNotes,
                         readOnly: _appointmentId != null,
                       ),
+
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
