@@ -1,5 +1,6 @@
 import 'package:aware_plus/views/notes_view.dart';
 import 'package:aware_plus/views/profile_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,23 @@ class CounselorDashboard extends StatefulWidget {
 }
 
 class _CounselorDashboardState extends State<CounselorDashboard> {
+  @override
+  void initState() {
+    super.initState();
+    _checkAccess();
+  }
+
+  Future<void> _checkAccess() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    if (userDoc['role'] != 'counselor') {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
   Future<void> _updateStatus(String docId, String status) async {
     try {
       await FirebaseFirestore.instance
