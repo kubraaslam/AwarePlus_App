@@ -1,5 +1,6 @@
 import 'package:aware_plus/views/notes_view.dart';
 import 'package:aware_plus/views/profile_view.dart';
+import 'package:aware_plus/views/week_availability.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -111,6 +112,15 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
     );
   }
 
+  void _openAvailabilityManager() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const WeeklyAvailabilityScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
@@ -126,6 +136,11 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             child: Row(
               children: [
                 IconButton(
+                  icon: const Icon(Icons.schedule),
+                  tooltip: 'Manage Availability',
+                  onPressed: _openAvailabilityManager,
+                ),
+                IconButton(
                   icon: const Icon(Icons.note_alt),
                   tooltip: 'Past Notes',
                   onPressed: () {
@@ -137,7 +152,6 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                     );
                   },
                 ),
-
                 IconButton(
                   icon: const Icon(Icons.person),
                   tooltip: 'Profile',

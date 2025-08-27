@@ -65,7 +65,7 @@ class MyAppointmentsView extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => BookAppointmentPage( appointmentId: doc.id,
+                              builder: (context) => BookAppointmentPage( appointmentId: doc.id, counselorId: '5JBRZ1SxjeYDpGxrmJogOQHsISb2',
                               ),
                             ),
                           );
