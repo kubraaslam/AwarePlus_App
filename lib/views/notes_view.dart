@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class PastNotesPage extends StatelessWidget {
@@ -38,7 +38,7 @@ class PastNotesPage extends StatelessWidget {
             itemCount: completedAppointments.length,
             itemBuilder: (context, index) {
               final appt = completedAppointments[index];
-              final date = DateTime.tryParse(appt['preferredDate'] ?? '');
+              final date = DateTime.tryParse(appt['appointmentDate'] ?? '');
               final formattedDate =
                   date != null
                       ? DateFormat('MMMM d, yyyy').format(date)
@@ -54,7 +54,7 @@ class PastNotesPage extends StatelessWidget {
                 ),
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  title: Text(appt['fullName'] ?? 'Unknown Student'),
+                  title: Text(appt['studentName'] ?? 'Unknown Student'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

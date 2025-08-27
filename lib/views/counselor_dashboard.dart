@@ -188,7 +188,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                   final todayAppointments =
                       allAppointments.where((appt) {
                         final date = DateTime.tryParse(
-                          appt['preferredDate'] ?? '',
+                          appt['appointmentDate'] ?? '',
                         );
                         return date != null &&
                             date.year == now.year &&
@@ -208,7 +208,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                   final weekAppointments =
                       allAppointments.where((appt) {
                         final date = DateTime.tryParse(
-                          appt['preferredDate'] ?? '',
+                          appt['appointmentDate'] ?? '',
                         );
                         return date != null &&
                             date.isAfter(
@@ -398,7 +398,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
             const SizedBox(height: 10),
             if (appointments.isEmpty) const Text('No pending requests.'),
             ...appointments.map((appt) {
-              final date = DateTime.tryParse(appt['preferredDate'] ?? '');
+              final date = DateTime.tryParse(appt['appointmentDate'] ?? '');
               final formattedDate =
                   date != null
                       ? DateFormat('MMMM d, yyyy').format(date)
@@ -419,11 +419,11 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          appt['fullName'] ?? 'Unknown Student',
+                          appt['studentName'] ?? 'Unknown Student',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
-                        Text('$formattedDate • ${appt['preferredTime'] ?? ''}'),
+                        Text('$formattedDate • ${appt['appointmentTime'] ?? 'No time selected'}'),
                         const SizedBox(height: 4),
                         Text('Topic: ${appt['appointmentType'] ?? 'N/A'}'),
                         if (notes.isNotEmpty)
@@ -549,7 +549,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                         children: [
                           Expanded(
                             child: Text(
-                              '${item['preferredTime'] ?? ''} - ${item['fullName'] ?? ''}',
+                              '${item['appointmentTime'] ?? 'No time'} - ${item['studentName'] ?? ''}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -627,7 +627,7 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
 
     // Group appointments by date
     for (var appt in allAppointments) {
-      final date = DateTime.tryParse(appt['preferredDate'] ?? '');
+      final date = DateTime.tryParse(appt['appointmentDate'] ?? '');
       if (date != null && date.isAfter(now)) {
         final dayKey = DateTime(date.year, date.month, date.day);
         upcoming.putIfAbsent(dayKey, () => []).add(appt);
