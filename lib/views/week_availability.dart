@@ -178,6 +178,7 @@ class _WeeklyAvailabilityScreenState extends State<WeeklyAvailabilityScreen> {
                             );
                             if (start == null) return;
                             final end = await showTimePicker(
+                              // ignore: use_build_context_synchronously
                               context: context,
                               initialTime: const TimeOfDay(hour: 13, minute: 0),
                             );

@@ -1,6 +1,4 @@
-import 'package:aware_plus/views/notes_view.dart';
-import 'package:aware_plus/views/profile_view.dart';
-import 'package:aware_plus/views/week_availability.dart';
+import 'package:aware_plus/widgets/counselor_bottom_navbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -112,13 +110,33 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
     );
   }
 
+  int _currentIndex = 0;
+
+  void _onTabTapped(int index) {
+    if (_currentIndex == index) return;
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        // Already on Dashboard
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/counselorNotes');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/counselorProfile');
+        break;
+    }
+  }
+
   void _openAvailabilityManager() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const WeeklyAvailabilityScreen(),
-      ),
-    );
+    Navigator.pushNamed(context, '/availability');
+  }
+  void _openEventManager() {
+    Navigator.pushNamed(context, '/createEvents');
   }
 
   @override
@@ -141,35 +159,19 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                   onPressed: _openAvailabilityManager,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.note_alt),
-                  tooltip: 'Past Notes',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PastNotesPage(),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.person),
-                  tooltip: 'Profile',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                const ProfileView(showBackButton: true),
-                      ),
-                    );
-                  },
+                  icon: const Icon(Icons.calendar_month),
+                  tooltip: 'Create Events',
+                  onPressed: _openEventManager,
                 ),
               ],
             ),
           ),
         ],
+      ),
+      backgroundColor: Colors.white,
+      bottomNavigationBar: CounselorBottomNavbar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -246,18 +248,22 @@ class _CounselorDashboardState extends State<CounselorDashboard> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Welcome back, SSS!',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                          child: Center(
+                            child: Text(
+                              'Welcome back, SSS!',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'You have ${pendingAppointments.length} appointment requests and ${todayAppointments.length} sessions scheduled for today.',
-                          style: const TextStyle(color: Colors.black54),
+                        Center(
+                          child: Text(
+                            'You have ${pendingAppointments.length} appointment requests and ${todayAppointments.length} sessions scheduled for today.',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
                         ),
                         const SizedBox(height: 16),
 

@@ -102,7 +102,7 @@ class SupportView extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // Clinic Locations
+            // Sexual Health Events
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -110,10 +110,10 @@ class SupportView extends StatelessWidget {
               ),
               elevation: 1,
               child: ListTile(
-                title: const Text('Clinic Locations'),
+                title: const Text('Sexual Health Events'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 18),
                 onTap: () {
-                  // Navigate
+                  Navigator.pushNamed(context, '/events');
                 },
               ),
             ),
