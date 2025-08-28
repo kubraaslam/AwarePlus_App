@@ -1,3 +1,4 @@
+import 'package:aware_plus/widgets/counselor_bottom_navbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,8 @@ class PastNotesPage extends StatelessWidget {
         title: const Text('Past Session Notes'),
         backgroundColor: const Color(0xFFC9184A),
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream:
@@ -69,6 +72,22 @@ class PastNotesPage extends StatelessWidget {
               );
             },
           );
+        },
+      ),
+      bottomNavigationBar: CounselorBottomNavbar(
+        currentIndex: 1, // Index of Notes tab
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/counselorDashboard');
+              break;
+            case 1:
+              // Already on Notes page
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/counselorProfile');
+              break;
+          }
         },
       ),
     );

@@ -2,15 +2,16 @@
 
 import 'dart:io';
 import 'package:aware_plus/widgets/bottom_nav_bar.dart';
+import 'package:aware_plus/widgets/counselor_bottom_navbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileView extends StatefulWidget {
-  final bool showBackButton;
+  final bool useCounselorNav;
 
-  const ProfileView({super.key, this.showBackButton = false});
+  const ProfileView({super.key, this.useCounselorNav = false});
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -224,7 +225,7 @@ class _ProfileViewState extends State<ProfileView> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: widget.showBackButton,
+        automaticallyImplyLeading: false,
         title: const Text(
           'My Profile',
           style: TextStyle(
@@ -345,7 +346,11 @@ class _ProfileViewState extends State<ProfileView> {
                 if (confirm == true) {
                   await _auth.signOut();
                   if (!mounted) return;
-                  Navigator.pushReplacementNamed(context, '/login');
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
                 }
               },
 
@@ -363,9 +368,32 @@ class _ProfileViewState extends State<ProfileView> {
         ),
       ),
       bottomNavigationBar:
-          widget.showBackButton
-              ? null
+          widget.useCounselorNav
+              ? CounselorBottomNavbar(
+                // counselor nav bar
+                currentIndex: 2, // profile tab
+                onTap: (index) {
+                  switch (index) {
+                    case 0:
+                      Navigator.pushReplacementNamed(
+                        context,
+                        '/counselorDashboard',
+                      );
+                      break;
+                    case 1:
+                      Navigator.pushReplacementNamed(
+                        context,
+                        '/counselorNotes',
+                      );
+                      break;
+                    case 2:
+                      // already on profile
+                      break;
+                  }
+                },
+              )
               : BottomNavBar(
+                // student nav bar
                 currentIndex: 3,
                 onTap: (index) {
                   switch (index) {
@@ -379,6 +407,7 @@ class _ProfileViewState extends State<ProfileView> {
                       Navigator.pushReplacementNamed(context, '/support');
                       break;
                     case 3:
+                      // already on profile
                       break;
                   }
                 },
