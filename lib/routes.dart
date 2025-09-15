@@ -1,4 +1,3 @@
-
 import 'package:aware_plus/views/appointments_view.dart';
 import 'package:aware_plus/views/book_appointment_view.dart';
 import 'package:aware_plus/views/counselor_dashboard.dart';
@@ -15,6 +14,8 @@ import 'package:aware_plus/views/signup_view.dart';
 import 'package:aware_plus/views/support_view.dart';
 import 'package:aware_plus/views/week_availability.dart';
 import 'package:aware_plus/views/welcome_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
@@ -27,12 +28,17 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/glossary': (_) => GlossaryView(),
   '/emergency': (_) => EmergencyView(),
   '/profile': (_) => ProfileView(),
-  '/counselorProfile' : (_) => ProfileView(useCounselorNav: true),
+  '/counselorProfile': (_) => ProfileView(useCounselorNav: true),
   '/counselorDashboard': (_) => CounselorDashboard(),
-  '/bookAppointment': (_) => BookAppointmentPage(counselorId: '5JBRZ1SxjeYDpGxrmJogOQHsISb2',),
-  '/myAppointments' : (_) => MyAppointmentsView(),
-  '/counselorNotes' : (_) => PastNotesPage(),
-  '/availability' : (_) => WeeklyAvailabilityScreen(),
-  '/createEvents' : (_) => CounselorEventsPage(),
-  '/events' : (_) => StudentEventsPage()
+  '/bookAppointment':
+      (_) => BookAppointmentPage(counselorId: '5JBRZ1SxjeYDpGxrmJogOQHsISb2'),
+  '/myAppointments': (_) => MyAppointmentsView(),
+  '/counselorNotes': (_) => PastNotesPage(),
+  '/availability': (_) => WeeklyAvailabilityScreen(),
+  '/createEvents':
+      (_) => CounselorEventsPage(
+        auth: FirebaseAuth.instance,
+        firestore: FirebaseFirestore.instance,
+      ),
+  '/events': (_) => StudentEventsPage(),
 };

@@ -46,3 +46,9 @@ app.*.map.json
 
 node_modules/
 set-claims/serviceAccountKey.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

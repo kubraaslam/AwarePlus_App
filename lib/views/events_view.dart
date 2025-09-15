@@ -4,14 +4,15 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class StudentEventsPage extends StatefulWidget {
-  const StudentEventsPage({super.key});
+  final FirebaseFirestore? firestore;
+  const StudentEventsPage({super.key, this.firestore});
 
   @override
   State<StudentEventsPage> createState() => _StudentEventsPageState();
 }
 
 class _StudentEventsPageState extends State<StudentEventsPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -20,6 +21,7 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
   @override
   void initState() {
     super.initState();
+    _firestore = widget.firestore ?? FirebaseFirestore.instance;
     _loadEvents();
   }
 
@@ -81,32 +83,54 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                 shape: BoxShape.circle,
               ),
             ),
+            calendarBuilders: CalendarBuilders(
+              defaultBuilder: (context, day, focusedDay) {
+                return Container(
+                  key: Key('day-${day.year}-${day.month}-${day.day}'),
+                  alignment: Alignment.center,
+                  child: Text('${day.day}'),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: _selectedDay == null
-                ? const Center(child: Text("Select a date to view events"))
-                : ListView(
-                    padding: const EdgeInsets.all(12),
-                    children: _getEventsForDay(_selectedDay!).map((event) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: Color(0xFFFFCCD5), width: 2),
-                        ),
-                        elevation: 4,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          title: Text(event['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                            "${event['description']}\nLocation: ${event['location']}\nTime: ${event['time']}",
-                          ),
-                          isThreeLine: true,
-                          leading: const Icon(Icons.event, color: Color(0xFFC9184A)),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+            child:
+                _selectedDay == null
+                    ? const Center(child: Text("Select a date to view events"))
+                    : ListView(
+                      padding: const EdgeInsets.all(12),
+                      children:
+                          _getEventsForDay(_selectedDay!).map((event) {
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: const BorderSide(
+                                  color: Color(0xFFFFCCD5),
+                                  width: 2,
+                                ),
+                              ),
+                              elevation: 4,
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              child: ListTile(
+                                title: Text(
+                                  event['title'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  "${event['description']}\nLocation: ${event['location']}\nTime: ${event['time']}",
+                                ),
+                                isThreeLine: true,
+                                leading: const Icon(
+                                  Icons.event,
+                                  color: Color(0xFFC9184A),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                    ),
           ),
         ],
       ),
