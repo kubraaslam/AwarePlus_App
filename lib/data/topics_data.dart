@@ -31,7 +31,19 @@ final List<Topic> topics = [
       Subtopic(
         title: 'Why is it important?',
         description: 'The importance for individuals and communities',
-        onStart: (context) {},
+        onStart: (context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => ModuleView(
+                    topicId: "Sexual and Reproductive Health Education",
+                    learningModels: srhLearningModels,
+                    subtopicId: "Why is it important?",
+                  ),
+            ),
+          );
+        },
       ),
       Subtopic(
         title: 'Healthy relationships: communication, respect, boundaries',
@@ -58,12 +70,36 @@ final List<Topic> topics = [
       Subtopic(
         title: 'Male & female reproductive anatomy',
         description: 'Comprehensive overview of reproductive systems',
-        onStart: (context) {},
+        onStart: (context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => ModuleView(
+                    topicId: "Physical Sexual Health",
+                    learningModels: physicalHealthLearningModels,
+                    subtopicId: "Male & female reproductive anatomy",
+                  ),
+            ),
+          );
+        },
       ),
       Subtopic(
         title: 'Puberty and body changes',
         description: 'Physical and emotional changes during puberty',
-        onStart: (context) {},
+        onStart: (context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => ModuleView(
+                    topicId: "Physical Sexual Health",
+                    learningModels: physicalHealthLearningModels,
+                    subtopicId: "Puberty and body changes",
+                  ),
+            ),
+          );
+        },
       ),
       Subtopic(
         title: 'Menstrual cycle and health',
@@ -98,14 +134,21 @@ final List<Topic> topics = [
         'Empowering you to understand your rights, responsibilities, and the legal framework surrounding sexual and reproductive health.',
     subtopics: [
       Subtopic(
-        title: 'Understanding consent',
-        description: 'What consent means and why it\'s important',
-        onStart: (context) {},
-      ),
-      Subtopic(
         title: 'Age of consent laws',
         description: 'Legal framework around age of consent',
-        onStart: (context) {},
+        onStart: (context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => ModuleView(
+                    topicId: "Rights, Laws & Ethics",
+                    learningModels: rightsOfshLearningModels,
+                    subtopicId: "Age of consent laws",
+                  ),
+            ),
+          );
+        },
       ),
       Subtopic(
         title: 'Sexual harassment and assault laws',
@@ -132,7 +175,19 @@ final List<Topic> topics = [
       Subtopic(
         title: 'Pregnancy myths',
         description: 'Debunking common pregnancy misconceptions',
-        onStart: (context) {},
+        onStart: (context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => ModuleView(
+                    topicId: "Myths & Misconceptions",
+                    learningModels: mythsOfshLearningModels,
+                    subtopicId: "Pregnancy myths",
+                  ),
+            ),
+          );
+        },
       ),
       Subtopic(
         title: 'STI misconceptions',
